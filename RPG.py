@@ -38,6 +38,19 @@ screen = pygame.display.set_mode((display_width,display_height))
 clock = pygame.time.Clock()
 
 ### SCENES ###
+
+
+Map_Work_1 = pygame.image.load("Map_Work_1.png")
+Map_Park = pygame.image.load("Map_Park.png")
+Map_Work_2 = pygame.image.load("Map_Work_2.png")
+Map_Food = pygame.image.load("Map_Food.png")
+Map_Home = pygame.image.load("Map_Home.png")
+Map_Bank = pygame.image.load("Map_Bank.png")
+Map_Uni = pygame.image.load("Map_Uni.png")
+Map_Shop_1 = pygame.image.load("Map_Shop_1.png")
+Map_Shop_2 = pygame.image.load("Map_Shop_2.png")
+
+
 #Start
 #Opening
 #Map1
@@ -54,19 +67,133 @@ clock = pygame.time.Clock()
 
 
 
+
+
+
+
 ###   VARIABLES   START  ###
 
 
 ButtonLocationPrintHolder = "placeholder"
 scene = "Start"
+playerx = 360
+playery = 360
+current_map = 0
+global maps
+maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home", "Map_Bank", "Map_Uni", "Map_Shop_1", "Map_Shop_2"]
+global player_speed
+player_speed = 4
+can_up = True
+can_down = True
+can_left = True
+can_right = True
 
+
+tree1 = [400, 640, 400, 640]
+Obstacles = [tree1]
+obstacle_finder = [[1, 1, 1, 1]]
+Map_Home_Obstacles = [
+[472, 460, 724, 724],
+[244, 480, 412, 724],
+[244, 480, 412, 724],
+[84, 600, 412, 724],
+[-4, 248, 308, 264],
+[300, 236, 324, 264],
+[396, 236, 420, 264],
+[412, 248, 724, 264]
+]
 
 ###   VARIABLES   END   ###
 
 
 
 
+
+
+
+
+
+
 ###   PRINTING   START   ###
+
+def PrintMap_Work_1_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Work_1, (0, 0))
+
+def PrintMap_Park_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Park, (0, 0))
+
+def PrintMap_Work_2_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Work_2, (0, 0))
+
+def PrintMap_Food_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Food, (0, 0))
+
+def PrintMap_Home_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Home, (0, 0))
+
+def PrintMap_Bank_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Bank, (0, 0))
+
+def PrintMap_Uni_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Uni, (0, 0))
+
+def PrintMap_Shop_1_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Shop_1, (0, 0))
+
+def PrintMap_Shop_2_Below():
+    screen.fill((255,255,255))  # (R, G, B)
+    screen.blit(Map_Shop_2, (0, 0))
+
+
+
+
+
+def PrintMap_Work_1_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Work_1, (0, 0))
+
+def PrintMap_Park_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Park, (0, 0))
+
+def PrintMap_Work_2_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Work_2, (0, 0))
+
+def PrintMap_Food_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Food, (0, 0))
+
+def PrintMap_Home_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Home, (0, 0))
+
+def PrintMap_Bank_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Bank, (0, 0))
+
+def PrintMap_Uni_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Uni, (0, 0))
+
+def PrintMap_Shop_1_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Shop_1, (0, 0))
+
+def PrintMap_Shop_2_Above():
+    screen.fill((255,255,255))  # (R, G, B)
+    #screen.blit(Map_Shop_2, (0, 0))
+
+
+
 
 
 def PrintStart():
@@ -130,6 +257,13 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     screen.blit(buttontext3, textRect)
 
 
+def PrintPlayer(x, y):
+    s = pygame.Surface((16,16)) # Size of Shadow
+    s.set_alpha(180) # Alpha of Shadow
+    s.fill((115,55,0)) # Color of Shadow
+    screen.blit(s, ((x-4), (y-4))) # Position of Shadow
+    pygame.draw.rect(screen, (230, 110, 1), (x-8, y-8, 16, 16)) # Location, location, size, size
+
 
 
 
@@ -170,8 +304,100 @@ while running == True:
             if mx > xlimithigh and mx < xlimitlow and my > ylimithigh and my < ylimitlow:
                 ButtonLocationPrintHolder = buttonsDict[ButtonLocations]
                 #print(ButtonLocationPrintHolder)
-    #print("Stock: " + str(Current_Total_Stock))
-    #print("Limit: " + str(StockMax))
+
+    can_up = True
+    can_down = True
+    can_left = True
+    can_right = True
+
+    obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Work_1":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Park":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Work_2":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Food":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Home":
+        obstacle_finder = Map_Home_Obstacles
+    if scene == "Map_Bank":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Uni":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Shop_1":
+        obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Shop_2":
+        obstacle_finder = [[1,1,1,1]]
+
+
+
+    for i in obstacle_finder:
+        #print(i)
+        #print("next")
+        obstacle_xlow = i[0]
+        obstacle_ylow = i[1]
+        obstacle_xhigh = i[2]
+        obstacle_yhigh = i[3]
+        if (playerx + 4) == obstacle_xlow and playery >= obstacle_ylow and playery <= obstacle_yhigh:
+            can_right = False
+            print('rightobstance')
+        if (playerx - 4) == obstacle_xhigh and playery >= obstacle_ylow and playery <= obstacle_yhigh:
+            can_left = False
+            print('leftobstance')
+        if (playery + 4) == obstacle_ylow and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
+            can_down = False
+            print('downobstance')
+        if (playery - 4) == obstacle_yhigh and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
+            can_up = False
+            print('upobstance')
+
+#Movement
+
+    key = pygame.key.get_pressed()
+    if key[pygame.K_UP]:
+        if can_up == True:
+            playery -= player_speed
+
+    if key[pygame.K_DOWN]:
+        if can_down == True:
+            playery += player_speed
+
+    if key[pygame.K_RIGHT]:
+        if can_right == True:
+            playerx += player_speed
+
+    if key[pygame.K_LEFT]:
+        if can_left == True:
+            playerx -= player_speed
+
+
+
+#Movement between map
+
+    if playerx >= 704:
+        playerx = 0
+        if current_map != 9 and current_map != 6 and current_map != 3:
+            current_map += 1
+    if playerx <= -4:
+        playerx = 700
+        if current_map != 1 and current_map != 4 and current_map != 7:
+            current_map -= 1
+
+
+    if playery >= 704:
+        playery = 0
+        if current_map != 7 and current_map != 8 and current_map != 9:
+            current_map += 3
+    if playery <= -4:
+        playery = 700
+        if current_map != 1 and current_map != 2 and current_map != 3:
+            current_map -= 3
+
+    scene = maps[current_map]
+
+
+
 
 
     if scene == "Start":
@@ -181,21 +407,41 @@ while running == True:
         PrintStartButtons("PLAY", "LOAD", "QUIT")
         if ButtonLocationPrintHolder == "button1":
             something = "happens"
-            #scene = "Map1"
+            scene = "Map_Home"
+            current_map = 5
+            ButtonLocationPrintHolder = "holder"
         if ButtonLocationPrintHolder == "button2":
             something = "happens"
             #scene = "Load_Screen"
+            ButtonLocationPrintHolder = "holder"
         if ButtonLocationPrintHolder == "button3":
             running = False
+            ButtonLocationPrintHolder = "holder"
+
+    if scene != "Start":
+        Current_Scene_Finder = str(scene) + ".png"
+        Current_Scene = pygame.image.load(Current_Scene_Finder)
+        screen.blit(Current_Scene, (0, 0))
+
+
+    if scene != "Start":
+        PrintPlayer(playerx,playery)
+        Current_Scene_Above_Finder = str(scene) + "_Above.png"
+        Current_Scene_Above = pygame.image.load(Current_Scene_Above_Finder)
+        screen.blit(Current_Scene_Above, (0, 0))
 
 
 
+
+    #print("Current: " + str(current_map))
+    #print("Map: " + str(maps[current_map]))
+    #print("x: " + str(playerx))
+    #print("y: " + str(playery))
 
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)
     clock.tick(60)
-
 
 
 
