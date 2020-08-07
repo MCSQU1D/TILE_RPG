@@ -83,15 +83,42 @@ global maps
 maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home", "Map_Bank", "Map_Uni", "Map_Shop_1", "Map_Shop_2"]
 global player_speed
 player_speed = 4
+global can_up
+global can_down
+global can_left
+global can_right
 can_up = True
 can_down = True
 can_left = True
 can_right = True
+health = 100
+time = "0:00"
+Time_Actual = 0
+Days = 0
+stamina = 100
 
 
-tree1 = [400, 640, 400, 640]
-Obstacles = [tree1]
-obstacle_finder = [[1, 1, 1, 1]]
+# all positions: lower are subtracted 4, upper are added 4 to compensate for player size
+obstacle_finder = [
+[1, 1, 1, 1]
+]
+
+Map_Work_1_Obstacles = [
+[1, 1, 1, 1]
+]
+
+Map_Park_Obstacles = [
+[1, 1, 1, 1]
+]
+
+Map_Work_2_Obstacles = [
+[1, 1, 1, 1]
+]
+
+Map_Food_Obstacles = [
+[1, 1, 1, 1]
+]
+
 Map_Home_Obstacles = [
 [472, 460, 724, 724],
 [244, 480, 412, 724],
@@ -102,6 +129,27 @@ Map_Home_Obstacles = [
 [396, 236, 420, 264],
 [412, 248, 724, 264]
 ]
+
+Map_Bank_Obstacles = [
+[-4, 248, 248, 264],
+[248, -4, 264, 248],
+[240, 240, 264, 264],
+[-4, 460, 256, 724],
+[492, 12, 724, 708]
+]
+
+Map_Uni_Obstacles = [
+[1, 1, 1, 1]
+]
+
+Map_Shop_1_Obstacles = [
+[1, 1, 1, 1]
+]
+
+Map_Shop_2_Obstacles = [
+[1, 1, 1, 1]
+]
+
 
 ###   VARIABLES   END   ###
 
@@ -257,12 +305,150 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     screen.blit(buttontext3, textRect)
 
 
+def PrintStats(health, time, stamina):
+    font = pygame.font.Font('RUSKOF.ttf', 30) #Font size
+    health = "Health: " + str(health)
+    time = "Time: " + str(time)
+    stamina = "Stamina: " + str(stamina)
+
+
+    health = font.render(health, True, (255, 0, 0)) #Font colour
+    linewidth = health.get_width()
+    textRect = health.get_rect()
+    textRect.center = ((display_width/2), 30)
+    screen.blit(health, textRect)
+
+
+    time = font.render(time, True, (255, 255, 255)) #Font colour
+    linewidth = time.get_width()
+    textRect = time.get_rect()
+    textRect.center = ((display_width/2)+200, 30)
+    screen.blit(time, textRect)
+
+
+    stamina = font.render(stamina, True, (3, 157, 252)) #Font colour
+    linewidth = stamina.get_width()
+    textRect = stamina.get_rect()
+    textRect.center = ((display_width/2)-200, 30)
+    screen.blit(stamina, textRect)
+
+
+
 def PrintPlayer(x, y):
     s = pygame.Surface((16,16)) # Size of Shadow
     s.set_alpha(180) # Alpha of Shadow
     s.fill((115,55,0)) # Color of Shadow
     screen.blit(s, ((x-4), (y-4))) # Position of Shadow
+    SkateBoard(x, y)
     pygame.draw.rect(screen, (230, 110, 1), (x-8, y-8, 16, 16)) # Location, location, size, size
+
+def SkateBoard(x_coord, y_coord):
+    global playerx
+    global playery
+    playerx = x_coord
+    playery = y_coord
+    key = pygame.key.get_pressed()
+
+    if key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]:
+        CheckObstactles()
+        Movement(playerx, playery)
+        if key[pygame.K_RIGHT] or key[pygame.K_d]:
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-16, playery-4, 24, 8))
+        elif key[pygame.K_LEFT] or key[pygame.K_a]:
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-8, playery-4, 24, 8))
+        elif key[pygame.K_UP] or key[pygame.K_w]:
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-8, 8, 24))
+        elif key[pygame.K_DOWN] or key[pygame.K_s]:
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-16, 8, 24))
+
+
+
+
+def CheckObstactles():
+    global can_up
+    global can_down
+    global can_left
+    global can_right
+
+    can_up = True
+    can_down = True
+    can_left = True
+    can_right = True
+
+    obstacle_finder = [[1,1,1,1]]
+    if scene == "Map_Work_1":
+        obstacle_finder = Map_Work_1_Obstacles
+    if scene == "Map_Park":
+        obstacle_finder = Map_Park_Obstacles
+    if scene == "Map_Work_2":
+        obstacle_finder = Map_Work_2_Obstacles
+    if scene == "Map_Food":
+        obstacle_finder = Map_Food_Obstacles
+    if scene == "Map_Home":
+        obstacle_finder = Map_Home_Obstacles
+    if scene == "Map_Bank":
+        obstacle_finder = Map_Bank_Obstacles
+    if scene == "Map_Uni":
+        obstacle_finder = Map_Uni_Obstacles
+    if scene == "Map_Shop_1":
+        obstacle_finder = Map_Shop_1_Obstacles
+    if scene == "Map_Shop_2":
+        obstacle_finder = Map_Shop_2_Obstacles
+
+
+    for i in obstacle_finder:
+        #print(i)
+        #print("next")
+        obstacle_xlow = i[0]
+        obstacle_ylow = i[1]
+        obstacle_xhigh = i[2]
+        obstacle_yhigh = i[3]
+        if (playerx + 4) == obstacle_xlow and playery >= obstacle_ylow and playery <= obstacle_yhigh:
+            can_right = False
+            print('rightobstance')
+        if (playerx - 4) == obstacle_xhigh and playery >= obstacle_ylow and playery <= obstacle_yhigh:
+            can_left = False
+            print('leftobstance')
+        if (playery + 4) == obstacle_ylow and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
+            can_down = False
+            print('downobstance')
+        if (playery - 4) == obstacle_yhigh and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
+            can_up = False
+            print('upobstance')
+
+
+
+
+def Movement(x_coord, y_coord):
+    global playerx
+    global playery
+    playerx = x_coord
+    playery = y_coord
+
+    player_speed = 4
+    key = pygame.key.get_pressed()
+    if key[pygame.K_UP] or key[pygame.K_w]:
+        if can_up == True:
+            playery -= player_speed
+
+    if key[pygame.K_DOWN] or key[pygame.K_s]:
+        if can_down == True:
+            playery += player_speed
+
+    if key[pygame.K_RIGHT] or key[pygame.K_d]:
+        if can_right == True:
+            playerx += player_speed
+
+    if key[pygame.K_LEFT] or key[pygame.K_a]:
+        if can_left == True:
+            playerx -= player_speed
+
+
+
+
+
+
+
 
 
 
@@ -305,76 +491,12 @@ while running == True:
                 ButtonLocationPrintHolder = buttonsDict[ButtonLocations]
                 #print(ButtonLocationPrintHolder)
 
-    can_up = True
-    can_down = True
-    can_left = True
-    can_right = True
-
-    obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Work_1":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Park":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Work_2":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Food":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Home":
-        obstacle_finder = Map_Home_Obstacles
-    if scene == "Map_Bank":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Uni":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Shop_1":
-        obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Shop_2":
-        obstacle_finder = [[1,1,1,1]]
 
 
-
-    for i in obstacle_finder:
-        #print(i)
-        #print("next")
-        obstacle_xlow = i[0]
-        obstacle_ylow = i[1]
-        obstacle_xhigh = i[2]
-        obstacle_yhigh = i[3]
-        if (playerx + 4) == obstacle_xlow and playery >= obstacle_ylow and playery <= obstacle_yhigh:
-            can_right = False
-            print('rightobstance')
-        if (playerx - 4) == obstacle_xhigh and playery >= obstacle_ylow and playery <= obstacle_yhigh:
-            can_left = False
-            print('leftobstance')
-        if (playery + 4) == obstacle_ylow and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
-            can_down = False
-            print('downobstance')
-        if (playery - 4) == obstacle_yhigh and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
-            can_up = False
-            print('upobstance')
-
-#Movement
-
-    key = pygame.key.get_pressed()
-    if key[pygame.K_UP]:
-        if can_up == True:
-            playery -= player_speed
-
-    if key[pygame.K_DOWN]:
-        if can_down == True:
-            playery += player_speed
-
-    if key[pygame.K_RIGHT]:
-        if can_right == True:
-            playerx += player_speed
-
-    if key[pygame.K_LEFT]:
-        if can_left == True:
-            playerx -= player_speed
 
 
 
 #Movement between map
-
     if playerx >= 704:
         playerx = 0
         if current_map != 9 and current_map != 6 and current_map != 3:
@@ -383,8 +505,6 @@ while running == True:
         playerx = 700
         if current_map != 1 and current_map != 4 and current_map != 7:
             current_map -= 1
-
-
     if playery >= 704:
         playery = 0
         if current_map != 7 and current_map != 8 and current_map != 9:
@@ -393,9 +513,7 @@ while running == True:
         playery = 700
         if current_map != 1 and current_map != 2 and current_map != 3:
             current_map -= 3
-
     scene = maps[current_map]
-
 
 
 
@@ -425,10 +543,13 @@ while running == True:
 
 
     if scene != "Start":
+        CheckObstactles()
+        Movement(playerx, playery)
         PrintPlayer(playerx,playery)
         Current_Scene_Above_Finder = str(scene) + "_Above.png"
         Current_Scene_Above = pygame.image.load(Current_Scene_Above_Finder)
         screen.blit(Current_Scene_Above, (0, 0))
+        PrintStats(health, time, stamina)
 
 
 
@@ -437,7 +558,26 @@ while running == True:
     #print("Map: " + str(maps[current_map]))
     #print("x: " + str(playerx))
     #print("y: " + str(playery))
+    """
+    if Time_Actual >= 96:
+        Time_Actual = 0
+        Days += 1
+    Time_Actual_holder = Time_Actual
+    if "." in str(Time_Actual/4):
+        split_time = time.split(":")
+        while Time_Actual_holder >= 4:
+            Time_Actual_holder -= 4
+        split_time[1] = str(Time_Actual_holder*15)
+        if split_time[1] == "0":
+            split_time[1] = "00"
+        if split_time[1] >= "60":
+            split_time[1] = "00"
+            split_time[0] = (Time_Actual/4)
+        print(split_time)
+        time = split_time[0] + ":" + split_time[1]
 
+    Time_Actual += 1
+    """
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)
