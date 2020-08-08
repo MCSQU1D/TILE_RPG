@@ -100,14 +100,14 @@ can_right = True
 global health
 global Time_Actual
 global Days
-global stamina
+global current_stamina
 global max_stamina
 
 health = 100
 time = "0:00"
 Time_Actual = 0
 Days = 0
-stamina = 0
+current_stamina = 0
 max_stamina = 100
 
 
@@ -164,6 +164,52 @@ Map_Shop_1_Obstacles = [
 
 Map_Shop_2_Obstacles = [
 [1, 1, 1, 1]
+]
+
+
+
+
+# for horizontal enterances from above, ylow has 8 subtracted
+# for horizontal enterances from below, yhigh has 8 added
+# for verticle enterances from left, xlow has 8 subtracted
+# for verticle enterances from right, xhigh has 8 added
+
+#[xlow, ylow, xhigh, yhigh, scene]
+
+Map_Work_1_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Park_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Work_2_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Food_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Home_Entrances = [
+[512, 456, 568, 468, "Small_Apartment"]
+]
+
+Map_Bank_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Uni_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Shop_1_Entrances = [
+[-1, -1, -1, -1, "nothing"]
+]
+
+Map_Shop_2_Entrances = [
+[-1, -1, -1, -1, "nothing"]
 ]
 
 
@@ -256,8 +302,42 @@ def PrintMap_Shop_2_Above():
     screen.fill((255,255,255))  # (R, G, B)
     #screen.blit(Map_Shop_2, (0, 0))
 
+def Small_Apartment(buttontext1, buttontext2, buttontext3):
+    screen.fill((255,255,255))  # (R, G, B)
+    global buttonsDict
 
 
+    #buttonsDict = {(X, -X, Y, -Y) : operation/number}
+    buttonsDict = {
+        (214, 506, 400, 480) : "button1",
+        (213, 506, 500, 580) : "button2",
+        (239, 482, 600, 690) : "button3",
+    }
+
+
+    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    LineHolder = buttontext1
+    buttontext1 = font.render(buttontext1, True, (255, 217, 0)) #Font colour
+    linewidth = buttontext1.get_width()
+    textRect = buttontext1.get_rect()
+    textRect.center = ((display_width/2), 440)
+    screen.blit(buttontext1, textRect)
+
+    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    LineHolder = buttontext2
+    buttontext2 = font.render(buttontext2, True, (255, 217, 0)) #Font colour
+    linewidth = buttontext2.get_width()
+    textRect = buttontext2.get_rect()
+    textRect.center = ((display_width/2), 540)
+    screen.blit(buttontext2, textRect)
+
+    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    LineHolder = buttontext3
+    buttontext3 = font.render(buttontext3, True, (255, 217, 0)) #Font colour
+    linewidth = buttontext2.get_width()
+    textRect = buttontext3.get_rect()
+    textRect.center = ((display_width/2), 640)
+    screen.blit(buttontext3, textRect)
 
 
 def PrintStart():
@@ -321,12 +401,12 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     screen.blit(buttontext3, textRect)
 
 
-def PrintStats(health, time, stamina):
+def PrintStats(health, time, current_stamina):
     font = pygame.font.Font('RUSKOF.ttf', 30) #Font size
     health = "Health: " + str(health)
     time = "Time: " + str(time)
-    stamina = round(stamina, 1)
-    stamina = "Stamina: " + str(stamina)
+    current_stamina = int(current_stamina)
+    current_stamina = "Stamina: " + str(current_stamina)
 
 
     health = font.render(health, True, (255, 0, 0)) #Font colour
@@ -343,11 +423,11 @@ def PrintStats(health, time, stamina):
     screen.blit(time, textRect)
 
 
-    stamina = font.render(stamina, True, (3, 157, 252)) #Font colour
-    linewidth = stamina.get_width()
-    textRect = stamina.get_rect()
+    current_stamina = font.render(current_stamina, True, (3, 157, 252)) #Font colour
+    linewidth = current_stamina.get_width()
+    textRect = current_stamina.get_rect()
     textRect.center = ((display_width/2)-200, 30)
-    screen.blit(stamina, textRect)
+    screen.blit(current_stamina, textRect)
 
 
 
@@ -363,31 +443,72 @@ def PrintPlayer(x, y):
 def SkateBoard(x_coord, y_coord):
     global playerx
     global playery
-    global stamina
+    global current_stamina
     playerx = x_coord
     playery = y_coord
     key = pygame.key.get_pressed()
 
-    if (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skakeboard" in inventory:
+    if (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skateboard" in inventory and current_stamina > 1:
 
         CheckObstactles()
+        #CheckEntrances(playerx, playery)
         Movement(playerx, playery)
+        current_stamina -= 0.1
         if key[pygame.K_RIGHT] or key[pygame.K_d]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-20, playery-4, 24, 8))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-16, playery-4, 24, 8))
         elif key[pygame.K_LEFT] or key[pygame.K_a]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-4, 24, 8))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-8, playery-4, 24, 8))
         elif key[pygame.K_UP] or key[pygame.K_w]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-4, 8, 24))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-8, 8, 24))
         elif key[pygame.K_DOWN] or key[pygame.K_s]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-20, 8, 24))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-16, 8, 24))
+        else:
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-12, playery-4, 24, 8))
 
-    elif (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skakeboard" not in inventory and stamina > 1:
+    elif (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skateboard" not in inventory and current_stamina > 1:
         CheckObstactles()
+        #CheckEntrances(playerx, playery)
         Movement(playerx, playery)
-        stamina -= 1
-        stamina = round(stamina, 1)
+        current_stamina -= 1
+        current_stamina = round(current_stamina, 1)
 
 
+def CheckEntrances(playerx, playery):
+    global scene
+    entrance_finder = [[-1,-1,-1,-1, "nothing"]]
+    if scene == "Map_Work_1":
+        entrance_finder = Map_Work_1_Entrances
+    if scene == "Map_Park":
+        entrance_finder = Map_Park_Entrances
+    if scene == "Map_Work_2":
+        entrance_finder = Map_Work_2_Entrances
+    if scene == "Map_Food":
+        entrance_finder = Map_Food_Entrances
+    if scene == "Map_Home":
+        entrance_finder = Map_Home_Entrances
+    if scene == "Map_Bank":
+        entrance_finder = Map_Bank_Entrances
+    if scene == "Map_Uni":
+        entrance_finder = Map_Uni_Entrances
+    if scene == "Map_Shop_1":
+        entrance_finder = Map_Shop_1_Entrances
+    if scene == "Map_Shop_2":
+        entrance_finder = Map_Shop_2_Entrances
+
+    for i in entrance_finder:
+        #print(i)
+        #print("next")
+        entrance_xlow = i[0]
+        entrance_ylow = i[1]
+        entrance_xhigh = i[2]
+        entrance_yhigh = i[3]
+        entrance_scene = i[4]
+        #print(entrance_xlow,entrance_xhigh,entrance_ylow,entrance_yhigh)
+        #print(playerx, playery)
+        if entrance_xlow <= playerx <= entrance_xhigh and entrance_ylow <= playery <= entrance_yhigh:
+            #print('Entered: ' + entrance_scene)
+            scene = entrance_scene
+            #print(scene)
 
 
 def CheckObstactles():
@@ -431,16 +552,16 @@ def CheckObstactles():
         obstacle_yhigh = i[3]
         if (playerx + 4) == obstacle_xlow and playery >= obstacle_ylow and playery <= obstacle_yhigh:
             can_right = False
-            print('rightobstance')
+            #print('rightobstance')
         if (playerx - 4) == obstacle_xhigh and playery >= obstacle_ylow and playery <= obstacle_yhigh:
             can_left = False
-            print('leftobstance')
+            #print('leftobstance')
         if (playery + 4) == obstacle_ylow and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
             can_down = False
-            print('downobstance')
+            #print('downobstance')
         if (playery - 4) == obstacle_yhigh and playerx >= obstacle_xlow and playerx <= obstacle_xhigh:
             can_up = False
-            print('upobstance')
+            #print('upobstance')
 
 
 
@@ -489,8 +610,8 @@ def Movement(x_coord, y_coord):
 # main loop
 while running == True:
     movement_checker = False
-
-
+    #print("start of checker")
+    #print(scene)
 
 
     mx, my = pygame.mouse.get_pos()
@@ -530,7 +651,6 @@ while running == True:
 
 
 
-
 #Movement between map
     if playerx >= 704:
         playerx = 0
@@ -548,8 +668,8 @@ while running == True:
         playery = 700
         if current_map != 1 and current_map != 2 and current_map != 3:
             current_map -= 3
-    scene = maps[current_map]
-
+    if "Map" in scene:
+        scene = maps[current_map]
 
 
 
@@ -577,22 +697,36 @@ while running == True:
         screen.blit(Current_Scene, (0, 0))
 
 
-    if scene != "Start":
+    if "Map" in scene:
         CheckObstactles()
         Movement(playerx, playery)
         PrintPlayer(playerx,playery)
         Current_Scene_Above_Finder = str(scene) + "_Above.png"
         Current_Scene_Above = pygame.image.load(Current_Scene_Above_Finder)
         screen.blit(Current_Scene_Above, (0, 0))
-        PrintStats(health, time, stamina)
+        PrintStats(health, time, current_stamina)
 
+
+    CheckEntrances(playerx, playery)
+
+    if scene == "Small_Apartment":
+        Small_Apartment("Sleep", "Exit", "Something")
+        #print(ButtonLocationPrintHolder)
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            playerx = 536
+            playery = 440
+            scene = maps[current_map]
+            inventory.append("skateboard")
+
+        #scene = "Map_Home"
 
 
 
     #print("Current: " + str(current_map))
     #print("Map: " + str(maps[current_map]))
-    #print("x: " + str(playerx))
-    #print("y: " + str(playery))
+    print("x: " + str(playerx))
+    print("y: " + str(playery))
     """
     if Time_Actual >= 96:
         Time_Actual = 0
@@ -614,13 +748,20 @@ while running == True:
     Time_Actual += 1
     """
 
-    if stamina < max_stamina:
-        stamina += 0.1
-        stamina = round(stamina, 1)
+    if current_stamina < max_stamina:
+        current_stamina += 0.1
+        current_stamina = round(current_stamina, 1)
         if movement_checker == False:
-            stamina += 0.4
-        if stamina > (max_stamina-0.5):
-            stamina = max_stamina
+            current_stamina += 0.4
+        if current_stamina > (max_stamina-0.5):
+            current_stamina = max_stamina
+
+
+    #VARIABLE RESET
+
+    ButtonLocationPrintHolder = "holder"
+
+
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)
