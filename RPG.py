@@ -81,8 +81,12 @@ playery = 360
 current_map = 0
 global maps
 maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home", "Map_Bank", "Map_Uni", "Map_Shop_1", "Map_Shop_2"]
+
+
 global player_speed
 player_speed = 4
+inventory = []
+
 global can_up
 global can_down
 global can_left
@@ -91,11 +95,23 @@ can_up = True
 can_down = True
 can_left = True
 can_right = True
+
+
+global health
+global Time_Actual
+global Days
+global stamina
+global max_stamina
+
 health = 100
 time = "0:00"
 Time_Actual = 0
 Days = 0
-stamina = 100
+stamina = 0
+max_stamina = 100
+
+
+
 
 
 # all positions: lower are subtracted 4, upper are added 4 to compensate for player size
@@ -309,6 +325,7 @@ def PrintStats(health, time, stamina):
     font = pygame.font.Font('RUSKOF.ttf', 30) #Font size
     health = "Health: " + str(health)
     time = "Time: " + str(time)
+    stamina = round(stamina, 1)
     stamina = "Stamina: " + str(stamina)
 
 
@@ -342,24 +359,33 @@ def PrintPlayer(x, y):
     SkateBoard(x, y)
     pygame.draw.rect(screen, (230, 110, 1), (x-8, y-8, 16, 16)) # Location, location, size, size
 
+
 def SkateBoard(x_coord, y_coord):
     global playerx
     global playery
+    global stamina
     playerx = x_coord
     playery = y_coord
     key = pygame.key.get_pressed()
 
-    if key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]:
+    if (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skakeboard" in inventory:
+
         CheckObstactles()
         Movement(playerx, playery)
         if key[pygame.K_RIGHT] or key[pygame.K_d]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-16, playery-4, 24, 8))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-20, playery-4, 24, 8))
         elif key[pygame.K_LEFT] or key[pygame.K_a]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-8, playery-4, 24, 8))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-4, 24, 8))
         elif key[pygame.K_UP] or key[pygame.K_w]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-8, 8, 24))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-4, 8, 24))
         elif key[pygame.K_DOWN] or key[pygame.K_s]:
-            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-16, 8, 24))
+            pygame.draw.rect(screen, (3, 252, 11), (playerx-4, playery-20, 8, 24))
+
+    elif (key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]) and "skakeboard" not in inventory and stamina > 1:
+        CheckObstactles()
+        Movement(playerx, playery)
+        stamina -= 1
+        stamina = round(stamina, 1)
 
 
 
@@ -420,6 +446,7 @@ def CheckObstactles():
 
 
 def Movement(x_coord, y_coord):
+    global movement_checker
     global playerx
     global playery
     playerx = x_coord
@@ -443,6 +470,9 @@ def Movement(x_coord, y_coord):
         if can_left == True:
             playerx -= player_speed
 
+    if playerx != x_coord or playery != y_coord:
+        movement_checker = True
+
 
 
 
@@ -458,7 +488,12 @@ def Movement(x_coord, y_coord):
 
 # main loop
 while running == True:
-    mx, my = pygame.mouse.get_pos()            #From Alexander Henry Photios
+    movement_checker = False
+
+
+
+
+    mx, my = pygame.mouse.get_pos()
     #print("X: " + str(mx) + ", Y: " + str(my))
 
     # event handling, gets all event from the event queue
@@ -578,6 +613,14 @@ while running == True:
 
     Time_Actual += 1
     """
+
+    if stamina < max_stamina:
+        stamina += 0.1
+        stamina = round(stamina, 1)
+        if movement_checker == False:
+            stamina += 0.4
+        if stamina > (max_stamina-0.5):
+            stamina = max_stamina
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)
