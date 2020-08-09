@@ -223,7 +223,6 @@ Map_Shop_2_Entrances = [
 
 
 
-
 ###   PRINTING   START   ###
 
 def PrintMap_Work_1_Below():
@@ -265,45 +264,8 @@ def PrintMap_Shop_2_Below():
 
 
 
-
-def PrintMap_Work_1_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Work_1, (0, 0))
-
-def PrintMap_Park_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Park, (0, 0))
-
-def PrintMap_Work_2_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Work_2, (0, 0))
-
-def PrintMap_Food_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Food, (0, 0))
-
-def PrintMap_Home_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Home, (0, 0))
-
-def PrintMap_Bank_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Bank, (0, 0))
-
-def PrintMap_Uni_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Uni, (0, 0))
-
-def PrintMap_Shop_1_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Shop_1, (0, 0))
-
-def PrintMap_Shop_2_Above():
-    screen.fill((255,255,255))  # (R, G, B)
-    #screen.blit(Map_Shop_2, (0, 0))
-
 def Small_Apartment(buttontext1, buttontext2, buttontext3):
-    screen.fill((255,255,255))  # (R, G, B)
+    #screen.fill((255,255,255))  # (R, G, B)
     global buttonsDict
 
 
@@ -315,32 +277,72 @@ def Small_Apartment(buttontext1, buttontext2, buttontext3):
     }
 
 
-    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
     LineHolder = buttontext1
-    buttontext1 = font.render(buttontext1, True, (255, 217, 0)) #Font colour
+    buttontext1 = font.render(buttontext1, True, (0, 0, 0)) #Font colour
     linewidth = buttontext1.get_width()
     textRect = buttontext1.get_rect()
-    textRect.center = ((display_width/2), 440)
+    textRect.center = ((display_width/2), 360)
     screen.blit(buttontext1, textRect)
 
-    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
     LineHolder = buttontext2
-    buttontext2 = font.render(buttontext2, True, (255, 217, 0)) #Font colour
+    buttontext2 = font.render(buttontext2, True, (0, 0, 0)) #Font colour
     linewidth = buttontext2.get_width()
     textRect = buttontext2.get_rect()
-    textRect.center = ((display_width/2), 540)
+    textRect.center = ((display_width/4), 140)
     screen.blit(buttontext2, textRect)
 
-    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
     LineHolder = buttontext3
-    buttontext3 = font.render(buttontext3, True, (255, 217, 0)) #Font colour
-    linewidth = buttontext2.get_width()
+    buttontext3 = font.render(buttontext3, True, (0, 0, 0)) #Font colour
+    linewidth = buttontext3.get_width()
     textRect = buttontext3.get_rect()
-    textRect.center = ((display_width/2), 640)
+    textRect.center = ((3*display_width/4), 640)
     screen.blit(buttontext3, textRect)
 
 
-def PrintStart():
+
+def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action_4_text, exit_x, exit_y, building):
+    global buttonsDict
+    scene = building
+    Building_Background = pygame.image.load(building + ".png")
+    screen.blit(Building_Background, (0, 0))
+
+    playerx = exit_x
+    playery = exit_y
+
+    buttonsDict = {
+        (214, 506, 400, 480) : "button1",  #Exit
+        (213, 506, 500, 580) : "button2",
+        (239, 482, 600, 690) : "button3",
+        (239, 482, 600, 690) : "button4",
+        (239, 482, 600, 690) : "button5",
+    }
+    printlist = [
+    [exit_text, 400, 320],
+    [action_1_text, 400, 320],
+    [action_2_text, 400, 320],
+    [action_3_text, 400, 320],
+    [action_4_text, 400, 320]
+    ]
+    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+
+    for i in printlist:
+        if i != "":
+            i = font.render(i, True, (255, 217, 0)) #Font colour
+            linewidth = i.get_width()
+            textRect = i.get_rect()
+            textRect.center = ((display_width/2), 640)
+            screen.blit(i, textRect)
+
+
+
+
+
+
+
+def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     screen.fill((205,0,0))  # (R, G, B)
     text = "RPG"
     font = pygame.font.Font('RUSKOF.ttf', 400) #Font size
@@ -350,21 +352,14 @@ def PrintStart():
     textRect = text.get_rect()
     textRect.center = ((display_width/2), 150)
     screen.blit(text, textRect)
+    
     text2 = "game by SAM MCKID, developed with PYTHON and PYGAME"
-    font = pygame.font.Font('RUSKOF.ttf', 20) #Font size
-    LineHolder = text2
+    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 30) #Font size
     text2 = font.render(text2, True, (0, 0, 0)) #Font colour
     linewidth = text2.get_width()
     textRect = text2.get_rect()
-    textRect.center = ((display_width/2), 735)
+    textRect.center = ((display_width/2), 700)
     screen.blit(text2, textRect)
-
-
-
-
-
-
-def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     global buttonsDict
 
 
@@ -395,7 +390,7 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
     LineHolder = buttontext3
     buttontext3 = font.render(buttontext3, True, (255, 217, 0)) #Font colour
-    linewidth = buttontext2.get_width()
+    linewidth = buttontext3.get_width()
     textRect = buttontext3.get_rect()
     textRect.center = ((display_width/2), 640)
     screen.blit(buttontext3, textRect)
@@ -674,9 +669,6 @@ while running == True:
 
 
     if scene == "Start":
-        PrintStart()
-
-
         PrintStartButtons("PLAY", "LOAD", "QUIT")
         if ButtonLocationPrintHolder == "button1":
             something = "happens"
@@ -691,13 +683,12 @@ while running == True:
             running = False
             ButtonLocationPrintHolder = "holder"
 
-    if scene != "Start":
-        Current_Scene_Finder = str(scene) + ".png"
-        Current_Scene = pygame.image.load(Current_Scene_Finder)
-        screen.blit(Current_Scene, (0, 0))
 
 
     if "Map" in scene:
+        Current_Scene_Finder = str(scene) + ".png"
+        Current_Scene = pygame.image.load(Current_Scene_Finder)
+        screen.blit(Current_Scene, (0, 0))
         CheckObstactles()
         Movement(playerx, playery)
         PrintPlayer(playerx,playery)
@@ -725,8 +716,8 @@ while running == True:
 
     #print("Current: " + str(current_map))
     #print("Map: " + str(maps[current_map]))
-    print("x: " + str(playerx))
-    print("y: " + str(playery))
+    print("x: " + str(mx))
+    print("y: " + str(my))
     """
     if Time_Actual >= 96:
         Time_Actual = 0
