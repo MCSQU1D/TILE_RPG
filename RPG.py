@@ -49,6 +49,8 @@ Map_Bank = pygame.image.load("Map_Bank.png")
 Map_Uni = pygame.image.load("Map_Uni.png")
 Map_Shop_1 = pygame.image.load("Map_Shop_1.png")
 Map_Shop_2 = pygame.image.load("Map_Shop_2.png")
+pygame.mixer.music.load("Music.mp3")
+pygame.mixer.music.play(0)
 
 
 #Start
@@ -352,7 +354,7 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     textRect = text.get_rect()
     textRect.center = ((display_width/2), 150)
     screen.blit(text, textRect)
-    
+
     text2 = "game by SAM MCKID, developed with PYTHON and PYGAME"
     font = pygame.font.Font('RUSKOF_LIGHT.ttf', 30) #Font size
     text2 = font.render(text2, True, (0, 0, 0)) #Font colour
@@ -448,7 +450,8 @@ def SkateBoard(x_coord, y_coord):
         CheckObstactles()
         #CheckEntrances(playerx, playery)
         Movement(playerx, playery)
-        current_stamina -= 0.1
+        current_stamina -= 0.5
+        current_stamina = round(current_stamina, 1)
         if key[pygame.K_RIGHT] or key[pygame.K_d]:
             pygame.draw.rect(screen, (3, 252, 11), (playerx-16, playery-4, 24, 8))
         elif key[pygame.K_LEFT] or key[pygame.K_a]:
@@ -607,6 +610,13 @@ while running == True:
     movement_checker = False
     #print("start of checker")
     #print(scene)
+    print(pygame.mixer.music.get_pos())
+    if pygame.mixer.music.get_pos() >= 6100:
+        pygame.mixer.music.play(0)
+    #print("Current: " + str(current_map))
+    #print("Map: " + str(maps[current_map]))
+    #print("x: " + str(mx))
+    #print("y: " + str(my))
 
 
     mx, my = pygame.mouse.get_pos()
@@ -708,16 +718,12 @@ while running == True:
             playerx = 536
             playery = 440
             scene = maps[current_map]
-            inventory.append("skateboard")
 
         #scene = "Map_Home"
 
 
 
-    #print("Current: " + str(current_map))
-    #print("Map: " + str(maps[current_map]))
-    print("x: " + str(mx))
-    print("y: " + str(my))
+
     """
     if Time_Actual >= 96:
         Time_Actual = 0
