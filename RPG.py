@@ -50,7 +50,7 @@ Map_Uni = pygame.image.load("Map_Uni.png")
 Map_Shop_1 = pygame.image.load("Map_Shop_1.png")
 Map_Shop_2 = pygame.image.load("Map_Shop_2.png")
 pygame.mixer.music.load("Music.mp3")
-pygame.mixer.music.play(0)
+
 
 
 #Start
@@ -199,7 +199,7 @@ Map_Home_Entrances = [
 ]
 
 Map_Bank_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[480, 216, 496, 280, "Bank"]
 ]
 
 Map_Uni_Entrances = [
@@ -266,77 +266,53 @@ def PrintMap_Shop_2_Below():
 
 
 
-def Small_Apartment(buttontext1, buttontext2, buttontext3):
+def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action_4_text, exit_coords, building):
+    #print the buttons
+    #print the background
+    #add exit function
     #screen.fill((255,255,255))  # (R, G, B)
+    global scene
     global buttonsDict
-
-
-    #buttonsDict = {(X, -X, Y, -Y) : operation/number}
-    buttonsDict = {
-        (214, 506, 400, 480) : "button1",
-        (213, 506, 500, 580) : "button2",
-        (239, 482, 600, 690) : "button3",
-    }
-
-
-    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
-    LineHolder = buttontext1
-    buttontext1 = font.render(buttontext1, True, (0, 0, 0)) #Font colour
-    linewidth = buttontext1.get_width()
-    textRect = buttontext1.get_rect()
-    textRect.center = ((display_width/2), 360)
-    screen.blit(buttontext1, textRect)
-
-    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
-    LineHolder = buttontext2
-    buttontext2 = font.render(buttontext2, True, (0, 0, 0)) #Font colour
-    linewidth = buttontext2.get_width()
-    textRect = buttontext2.get_rect()
-    textRect.center = ((display_width/4), 140)
-    screen.blit(buttontext2, textRect)
-
-    font = pygame.font.Font('RUSKOF_LIGHT.ttf', 50) #Font size
-    LineHolder = buttontext3
-    buttontext3 = font.render(buttontext3, True, (0, 0, 0)) #Font colour
-    linewidth = buttontext3.get_width()
-    textRect = buttontext3.get_rect()
-    textRect.center = ((3*display_width/4), 640)
-    screen.blit(buttontext3, textRect)
-
-
-
-def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action_4_text, exit_x, exit_y, building):
-    global buttonsDict
+    global playerx
+    global playery
     scene = building
+
     Building_Background = pygame.image.load(building + ".png")
     screen.blit(Building_Background, (0, 0))
+    s = pygame.Surface((720,720)) # Size of Shadow
+    s.set_alpha(120) # Alpha of Shadow
+    s.fill((255,255,255)) # Color of Shadow
+    screen.blit(s, (0, 0))
 
-    playerx = exit_x
-    playery = exit_y
+
+    playerx = exit_coords[0]
+    playery = exit_coords[1]
 
     buttonsDict = {
-        (214, 506, 400, 480) : "button1",  #Exit
-        (213, 506, 500, 580) : "button2",
-        (239, 482, 600, 690) : "button3",
-        (239, 482, 600, 690) : "button4",
-        (239, 482, 600, 690) : "button5",
+        (50, 250, 550, 650) : "button1",  #Exit
+        (425, 625, 150, 250) : "button2",
+        (425, 625, 250, 350) : "button3",
+        (425, 625, 350, 450) : "button4",
+        (425, 625, 450, 550) : "button5",
     }
+
     printlist = [
-    [exit_text, 400, 320],
-    [action_1_text, 400, 320],
-    [action_2_text, 400, 320],
-    [action_3_text, 400, 320],
-    [action_4_text, 400, 320]
+    [exit_text, 150, 600],
+    [action_1_text, 525, 200],
+    [action_2_text, 525, 300],
+    [action_3_text, 525, 400],
+    [action_4_text, 525, 500]
     ]
-    font = pygame.font.Font('RUSKOF.ttf', 160) #Font size
+    font = pygame.font.Font('American_Captain.ttf', 50) #Font size
 
     for i in printlist:
-        if i != "":
-            i = font.render(i, True, (255, 217, 0)) #Font colour
-            linewidth = i.get_width()
-            textRect = i.get_rect()
-            textRect.center = ((display_width/2), 640)
-            screen.blit(i, textRect)
+        if i[0] != "":
+            h = i[0]
+            h = font.render(h, True, (0, 0, 0)) #Font colour
+            linewidth = h.get_width()
+            textRect = h.get_rect()
+            textRect.center = (i[1], i[2])
+            screen.blit(h, textRect)
 
 
 
@@ -399,7 +375,7 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
 
 
 def PrintStats(health, time, current_stamina):
-    font = pygame.font.Font('RUSKOF.ttf', 30) #Font size
+    font = pygame.font.Font('American_Captain.ttf', 30) #Font size
     health = "Health: " + str(health)
     time = "Time: " + str(time)
     current_stamina = int(current_stamina)
@@ -505,7 +481,10 @@ def CheckEntrances(playerx, playery):
         #print(playerx, playery)
         if entrance_xlow <= playerx <= entrance_xhigh and entrance_ylow <= playery <= entrance_yhigh:
             #print('Entered: ' + entrance_scene)
-            scene = entrance_scene
+            if entrance_scene == "Small_Apartment":
+                PrintBuilding("EXIT", "SLEEP", "SAVE", "IDK", "SOMETHING", (536, 440), "Small_Apartment")
+            if entrance_scene == "Bank":
+                PrintBuilding("EXIT", "DEPOSIT", "WITHDRAWL", "INVEST", "ROB", (460, 248), "Bank")
             #print(scene)
 
 
@@ -610,9 +589,6 @@ while running == True:
     movement_checker = False
     #print("start of checker")
     #print(scene)
-    print(pygame.mixer.music.get_pos())
-    if pygame.mixer.music.get_pos() >= 6100:
-        pygame.mixer.music.play(0)
     #print("Current: " + str(current_map))
     #print("Map: " + str(maps[current_map]))
     #print("x: " + str(mx))
@@ -654,8 +630,6 @@ while running == True:
 
 
 
-
-
 #Movement between map
     if playerx >= 704:
         playerx = 0
@@ -677,7 +651,6 @@ while running == True:
         scene = maps[current_map]
 
 
-
     if scene == "Start":
         PrintStartButtons("PLAY", "LOAD", "QUIT")
         if ButtonLocationPrintHolder == "button1":
@@ -685,6 +658,7 @@ while running == True:
             scene = "Map_Home"
             current_map = 5
             ButtonLocationPrintHolder = "holder"
+            pygame.mixer.music.play(0)
         if ButtonLocationPrintHolder == "button2":
             something = "happens"
             #scene = "Load_Screen"
@@ -711,12 +685,13 @@ while running == True:
     CheckEntrances(playerx, playery)
 
     if scene == "Small_Apartment":
-        Small_Apartment("Sleep", "Exit", "Something")
-        #print(ButtonLocationPrintHolder)
-        if ButtonLocationPrintHolder == "button2":
+        if ButtonLocationPrintHolder == "button1":
             ButtonLocationPrintHolder = "holder"
-            playerx = 536
-            playery = 440
+            scene = maps[current_map]
+
+    if scene == "Bank":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
             scene = maps[current_map]
 
         #scene = "Map_Home"
@@ -755,10 +730,11 @@ while running == True:
 
 
     #VARIABLE RESET
-
     ButtonLocationPrintHolder = "holder"
 
-
+    #print(pygame.mixer.music.get_pos())
+    #if pygame.mixer.music.get_pos() >= 6000:
+    #    pygame.mixer.music.set_pos(-600)
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)
