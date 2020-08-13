@@ -39,16 +39,15 @@ clock = pygame.time.Clock()
 
 ### SCENES ###
 
-
-Map_Work_1 = pygame.image.load("Map_Work_1.png")
-Map_Park = pygame.image.load("Map_Park.png")
-Map_Work_2 = pygame.image.load("Map_Work_2.png")
-Map_Food = pygame.image.load("Map_Food.png")
-Map_Home = pygame.image.load("Map_Home.png")
-Map_Bank = pygame.image.load("Map_Bank.png")
-Map_Uni = pygame.image.load("Map_Uni.png")
-Map_Shop_1 = pygame.image.load("Map_Shop_1.png")
-Map_Shop_2 = pygame.image.load("Map_Shop_2.png")
+Map_Work_1 = pygame.image.load(os.path.join('backgrounds', 'Map_Work_1.png'))
+Map_Park = pygame.image.load(os.path.join('backgrounds', 'Map_Park.png'))
+Map_Work_2 = pygame.image.load(os.path.join('backgrounds', 'Map_Work_2.png'))
+Map_Food = pygame.image.load(os.path.join('backgrounds', 'Map_Food.png'))
+Map_Home = pygame.image.load(os.path.join('backgrounds', 'Map_Home.png'))
+Map_Bank = pygame.image.load(os.path.join('backgrounds', 'Map_Bank.png'))
+Map_Uni = pygame.image.load(os.path.join('backgrounds', 'Map_Uni.png'))
+Map_Shop_1 = pygame.image.load(os.path.join('backgrounds', 'Map_Shop_1.png'))
+Map_Shop_2 = pygame.image.load(os.path.join('backgrounds', 'Map_Shop_2.png'))
 pygame.mixer.music.load("Music.mp3")
 
 
@@ -276,8 +275,7 @@ def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action
     global playerx
     global playery
     scene = building
-
-    Building_Background = pygame.image.load(building + ".png")
+    Building_Background = pygame.image.load(os.path.join('backgrounds', (building + ".png")))
     screen.blit(Building_Background, (0, 0))
     s = pygame.Surface((720,720)) # Size of Shadow
     s.set_alpha(120) # Alpha of Shadow
@@ -671,13 +669,13 @@ while running == True:
 
     if "Map" in scene:
         Current_Scene_Finder = str(scene) + ".png"
-        Current_Scene = pygame.image.load(Current_Scene_Finder)
+        Current_Scene = pygame.image.load(os.path.join('backgrounds', Current_Scene_Finder))
         screen.blit(Current_Scene, (0, 0))
         CheckObstactles()
         Movement(playerx, playery)
         PrintPlayer(playerx,playery)
         Current_Scene_Above_Finder = str(scene) + "_Above.png"
-        Current_Scene_Above = pygame.image.load(Current_Scene_Above_Finder)
+        Current_Scene_Above = pygame.image.load(os.path.join('backgrounds', Current_Scene_Above_Finder))
         screen.blit(Current_Scene_Above, (0, 0))
         PrintStats(health, time, current_stamina)
 
