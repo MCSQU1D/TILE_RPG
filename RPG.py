@@ -86,7 +86,9 @@ maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home",
 
 global player_speed
 player_speed = 4
+global inventory
 inventory = []
+
 
 global can_up
 global can_down
@@ -99,15 +101,16 @@ can_right = True
 
 
 global health
-global Time_Actual
+global Time_Dict
 global Days
 global current_stamina
 global max_stamina
 
 health = 100
-time = "0:00"
-Time_Actual = 0
-Days = 0
+Time_Dict = {
+    "day" : 0,
+    "hour" : 12,
+}
 current_stamina = 0
 max_stamina = 100
 
@@ -116,6 +119,7 @@ max_stamina = 100
 
 
 # all positions: lower are subtracted 4, upper are added 4 to compensate for player size
+# [x-4,y-4,x+4,y+4]
 obstacle_finder = [
 [1, 1, 1, 1]
 ]
@@ -125,7 +129,10 @@ Map_Work_1_Obstacles = [
 ]
 
 Map_Park_Obstacles = [
-[1, 1, 1, 1]
+[-4, 456, 308, 472],
+[300, 456, 324, 484],
+[396, 456, 420, 484],
+[412, 456, 724, 472]
 ]
 
 Map_Work_2_Obstacles = [
@@ -133,7 +140,10 @@ Map_Work_2_Obstacles = [
 ]
 
 Map_Food_Obstacles = [
-[1, 1, 1, 1]
+[452, -4, 468, 248],
+[452, 240, 476, 264],
+[468, 248, 724, 264],
+[-4, -4, 220, 724]
 ]
 
 Map_Home_Obstacles = [
@@ -175,7 +185,7 @@ Map_Shop_2_Obstacles = [
 # for verticle enterances from left, xlow has 8 subtracted
 # for verticle enterances from right, xhigh has 8 added
 
-#[xlow, ylow, xhigh, yhigh, scene]
+#[xlow-8, ylow-8, xhigh+8, yhigh+8, scene]
 
 Map_Work_1_Entrances = [
 [-1, -1, -1, -1, "nothing"]
@@ -190,7 +200,7 @@ Map_Work_2_Entrances = [
 ]
 
 Map_Food_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[208, 132, 244, 232, "Big_Red"]
 ]
 
 Map_Home_Entrances = [
@@ -375,7 +385,7 @@ def PrintStartButtons(buttontext1, buttontext2, buttontext3):
 def PrintStats(health, time, current_stamina):
     font = pygame.font.Font('American_Captain.ttf', 30) #Font size
     health = "Health: " + str(health)
-    time = "Time: " + str(time)
+    time = "DAY:" + (str(Time_Dict['day']) + "–" + str(Time_Dict['hour'])) + ":00"
     current_stamina = int(current_stamina)
     current_stamina = "Stamina: " + str(current_stamina)
 
@@ -480,7 +490,7 @@ def CheckEntrances(playerx, playery):
         if entrance_xlow <= playerx <= entrance_xhigh and entrance_ylow <= playery <= entrance_yhigh:
             #print('Entered: ' + entrance_scene)
             if entrance_scene == "Small_Apartment":
-                PrintBuilding("EXIT", "SLEEP", "SAVE", "IDK", "SOMETHING", (536, 440), "Small_Apartment")
+                PrintBuilding("EXIT", "SLEEP", "SAVE", "COMPUTER", "SETTINGS", (536, 440), "Small_Apartment")
             if entrance_scene == "Bank":
                 PrintBuilding("EXIT", "DEPOSIT", "WITHDRAWL", "INVEST", "ROB", (460, 248), "Bank")
             #print(scene)
@@ -677,7 +687,7 @@ while running == True:
         Current_Scene_Above_Finder = str(scene) + "_Above.png"
         Current_Scene_Above = pygame.image.load(os.path.join('backgrounds', Current_Scene_Above_Finder))
         screen.blit(Current_Scene_Above, (0, 0))
-        PrintStats(health, time, current_stamina)
+        PrintStats(health, Time_Dict, current_stamina)
 
 
     CheckEntrances(playerx, playery)
@@ -731,8 +741,8 @@ while running == True:
     ButtonLocationPrintHolder = "holder"
 
     #print(pygame.mixer.music.get_pos())
-    #if pygame.mixer.music.get_pos() >= 6000:
-    #    pygame.mixer.music.set_pos(-600)
+    if pygame.mixer.music.get_pos() >= 6000:
+        pygame.mixer.music.play()
     # updates the display
     pygame.display.update()
     # clock.tick(framespersecond)

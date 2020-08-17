@@ -57,36 +57,9 @@ clock = pygame.time.Clock()
 
 
 
-
-
-
-
-
-###   VARIABLES   START  ###
-
-
-# all positions: lower are subtracted 4, upper are added 4 to compensate for player size
-
-
-
-###   VARIABLES   END   ###
-
-
-
-
-
-
-
-
-
-###   PRINTING   START   ###
-
-
-
-
-screen.blit(test, (0, 0))
-
 ###   PRINTING   END   ###
+
+health = 100
 
 
 # main loop
@@ -127,7 +100,16 @@ while running == True:
                 #print(ButtonLocationPrintHolder)
     print("x: " + str(mx), "y: " + str(my))
 
+    font = pygame.font.Font('American_Captain.ttf', 60) #Font size
 
+    buttontext3 = "Health"
+    buttontext3 = font.render(buttontext3, True, (255, 255, 255)) #Font colour
+    linewidth = buttontext3.get_width()
+    textRect = buttontext3.get_rect()
+    textRect.center = (300, 640)
+    screen.blit(buttontext3, textRect)
+
+    pygame.draw.rect(screen, (255, 0, 0), (300, 640, 200, 200))
 
     #VARIABLE RESET
 
