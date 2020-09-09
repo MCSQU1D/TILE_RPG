@@ -78,8 +78,8 @@ pygame.mixer.music.load("Music.mp3")
 
 ButtonLocationPrintHolder = "placeholder"
 scene = "Start"
-playerx = 360
-playery = 360
+playerx = 536
+playery = 440
 current_map = 0
 global maps
 maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home", "Map_Bank", "Map_Uni", "Map_Shop_1", "Map_Shop_2"]
@@ -87,8 +87,7 @@ maps = ["Start", "Map_Work_1", "Map_Park", "Map_Work_2", "Map_Food", "Map_Home",
 
 global player_speed
 player_speed = 4
-global inventory
-inventory = []
+
 
 
 global can_up
@@ -111,6 +110,7 @@ global Stats_Dict
 global money
 global Bank_account
 global Mobster_Dict
+global inventory
 
 Bank_account = 100
 health = 100
@@ -118,7 +118,7 @@ money = 1000000
 Time_Taken = 0
 Time_Dict = {
     "day" : 0,
-    "hour" : 12,
+    "hour" : 20,
 }
 Stats_Dict = {
     "intelligence" : 1000,
@@ -129,28 +129,33 @@ Stats_Dict = {
 current_stamina = 50000
 max_stamina = 100
 Mobster_Dict = {
-    "x" : 360,
-    "y" : 360,
+    "x" : 24,
+    "y" : 24,
     "health" : 100,
     "damage" : 20
 }
+inventory = {}
 
 Sales_Job = "None"
 Shipping_Job = "None"
 Accounting_Job = "None"
+Banking_Job = "None"
+Executive_Job = "None"
 
 
-#["Job", Int_req, Str_req, Chm_req, Pay]
+
 global Workplace_List
 global Sales_Dict
 global Accounting_Dict
 global Shipping_Dict
+global Banking_Dict
+global Executive_Dict
 
-
+#["Job", Int_req, Str_req, Chm_req, Pay]
 Sales_Dict = [
 ["Sales", 40, 0, 40, 40],
 ["Head of Floor", 75, 0, 60, 75],
-["Head of Sales", 100, 0, 75, 100]
+["Sales Manager", 100, 0, 75, 100]
 ]
 Accounting_Dict = [
 ["Accountant", 80, 0, 0, 50],
@@ -160,6 +165,16 @@ Shipping_Dict = [
 ["Stacker", 0, 25, 0, 20],
 ["Forklift Driver", 25, 50, 0, 35],
 ["Head of Shipping", 30, 75, 0, 60]
+]
+Banking_Dict = [
+["Financial Trader", 80, 0, 0, 120],
+["Investment Banker", 100, 0, 0, 150],
+["Trust Manager", 100, 0, 50, 180]
+]
+Executive_Dict = [
+["CRO", 150, 50, 150, 200],
+["CFO", 250, 100, 250, 500],
+["CEO", 500, 200, 500, 1000]
 ]
 
 # all positions: lower are subtracted 4, upper are added 4 to compensate for player size
@@ -199,9 +214,12 @@ Map_Food_Obstacles = [
 [452, -4, 468, 248],
 [452, 240, 476, 264],
 [468, 248, 724, 264],
-[-4, -4, 220, 724]
+[-4, -4, 220, 724],
+[-4, 716, 264, 724],
+[448, 716, 724, 724]
 ]
 Map_Home_Obstacles = [
+[-4, 716, 724, 724], # Bottom boarder
 [472, 460, 724, 724],
 [244, 480, 412, 724],
 [244, 480, 412, 724],
@@ -223,16 +241,18 @@ Map_Bank_Obstacles = [
 Map_Uni_Obstacles = [
 [-4, -4, 4, 724], #left boarder
 [-4, 716, 724, 724], # Bottom boarder
-[1, 1, 1, 1]
+[-4, -4, 264, 248],
+[448, -4, 724, 228],
+[-4, 472, 724, 724]
 ]
 Map_Shop_1_Obstacles = [
 [-4, 716, 724, 724], # Bottom boarder
-[1, 1, 1, 1]
+[-4, 472, 724, 724]
 ]
 Map_Shop_2_Obstacles = [
 [716, -4, 724, 724], # Right boarder
 [-4, 716, 724, 724], # Bottom boarder
-[1, 1, 1, 1]
+[-4, 472, 724, 724]
 ]
 # for horizontal enterances from above, ylow has 8 subtracted
 # for horizontal enterances from below, yhigh has 8 added
@@ -248,7 +268,8 @@ Map_Park_Entrances = [
 [-1, -1, -1, -1, "nothing"]
 ]
 Map_Work_2_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[232, 236, 300, 284, "Work_2_Banking"],
+[440, 472, 488, 560, "Work_2_Executive"]
 ]
 Map_Food_Entrances = [
 [208, 132, 244, 232, "Big_Red"]
@@ -372,6 +393,9 @@ def PrintMap():
         CheckEntrances(playerx, playery)
 
 def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action_4_text, exit_coords, building):
+    global Mobster_Dict
+    Mobster_Dict["x"] = random.randrange(45, 135)*4 #respawn mobster at random location everytime you enter a building
+    Mobster_Dict["y"] = random.randrange(45, 135)*4
     #print the buttons
     #print the background
     #add exit function
@@ -386,8 +410,12 @@ def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action
     Building_Background = pygame.image.load(os.path.join('backgrounds', (building + ".png")))
     screen.blit(Building_Background, (0, 0))
     s = pygame.Surface((720,720)) # Size of Shadow
-    s.set_alpha(10) # Alpha of Shadow
-    s.fill((150,150,150)) # Color of Shadow
+    if Time_Dict["hour"] > 18:
+        s.set_alpha(Time_Dict["hour"]*5) # Alpha of Shadow
+        s.fill((0,0,0)) # Color of Shadow
+    else:
+        s.set_alpha(10) # Alpha of Shadow
+        s.fill((150,150,150)) # Color of Shadow
     screen.blit(s, (0, 0))
 
 
@@ -431,6 +459,10 @@ def BuildlingPrinter():
         PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (288, 652), "PlayerWork_Shipping")
     if entrance_scene == "Work_1_Accounting":
         PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (568, 288), "PlayerWork_Accounting")
+    if entrance_scene == "Work_2_Banking":
+        PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (268, 288), "PlayerWork_Banking")
+    if entrance_scene == "Work_2_Executive":
+        PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (432, 516), "PlayerWork_Executive")
 
 def Work(Work_Location):
     global Workplace_List
@@ -441,14 +473,18 @@ def Work(Work_Location):
     global Sales_Dict
     global Accounting_Dict
     global Shipping_Dict
+    global Banking_Dict
+    global Executive_Dict
     global Sales_Job
     global Accounting_Job
     global Shipping_Job
+    global Banking_Job
+    global Executive_Job
 
 
 
 
-    print(Work_Location)
+    #print(Work_Location)
     if Work_Location == "PlayerWork_Sales":
         PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (288, 424), "PlayerWork_Sales")
         Work_Place = "Sales"
@@ -464,6 +500,16 @@ def Work(Work_Location):
         Work_Place = "Shipping"
         Work_Dict = Shipping_Dict
         Job = Shipping_Job
+    if Work_Location == "PlayerWork_Banking":
+        PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (268, 288), "PlayerWork_Banking")
+        Work_Place = "Banking"
+        Work_Dict = Banking_Dict
+        Job = Banking_Job
+    if Work_Location == "PlayerWork_Executive":
+        PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (432, 516), "PlayerWork_Executive")
+        Work_Place = "Executive"
+        Work_Dict = Executive_Dict
+        Job = Executive_Job
 
     #EXIT
     if ButtonLocationPrintHolder == "button1":
@@ -476,7 +522,7 @@ def Work(Work_Location):
         if (Time_Dict["hour"] + 6) < 24:
             if Job == "None":
                 PrintGeneral("Apply for a Job")
-                print("Apply for a Job")
+                #print("Apply for a Job")
             else:
                 for i in Work_Dict:
                     if Job == i[0]:
@@ -494,19 +540,19 @@ def Work(Work_Location):
         a = 0
         for i in Work_Dict:
             a += 1
-            print(a)
-            print(i)
+            #print(a)
+            #print(i)
             if i[0] == Job:
                 holda = Work_Dict[(a-1)]
                 if Stats_Dict["intelligence"] >= holda[1]:
                     PrintGeneral("Promoted")
-                    print("Promoted")
+                    #print("Promoted")
                 else:
                     PrintGeneral("Rejected")
-                    print("Rejected")
+                    #print("Rejected")
             elif Job == "None":
                 PrintGeneral("Must have job here")
-                print("Must have job here")
+                #print("Must have job here")
     #APPLY
     if ButtonLocationPrintHolder == "button5":
         ButtonLocationPrintHolder = "Holder"
@@ -520,18 +566,24 @@ def Work(Work_Location):
                         Accounting_Job = Job
                     if "Shipping" in Work_Location:
                         Shipping_Job = Job
+                    if "Banking" in Work_Location:
+                        Banking_Job = Job
+                    if "Executive" in Work_Location:
+                        Executive_Job = Job
                     PrintGeneral("Hired")
-                    print("Hired")
+                    #print("Hired")
                 else:
                     PrintGeneral("Rejected")
         else:
             PrintGeneral("Already have a Job here")
-            print("Already have a Job here")
+            #print("Already have a Job here")
 
-    print(Job)
+    #print(Job)
 
     Work_Place = "holder"
     Work_Dict = "holder"
+
+
 
 
 
@@ -793,87 +845,126 @@ def PrintInventory():
 
 
 def GunFired(mx, my, playerx, playery):
-    bulletx = (playerx+mx)/2
-    bullety = (playery+my)/2
-    pygame.draw.rect(screen, (0, 0, 0), (bulletx, bullety, 8, 8)) # Location, location, size, size
-    bulletx = (bulletx+mx)/2
-    bullety = (bullety+my)/2
-    pygame.draw.rect(screen, (0, 0, 0), (bulletx, bullety, 8, 8)) # Location, location, size, size
-    bulletx = mx
-    bullety = my
-    pygame.draw.rect(screen, (0, 0, 0), (bulletx, bullety, 8, 8)) # Location, location, size, size
+    if "Gun" in inventory:
+        y1 = my
+        x1 = mx
+        y2 = playery
+        x2 = playerx
+
+
+        for xfinder in range(7):
+            x = xfinder*120
+            if x2 != x1:
+                y = ((y2-y1)*(x-x1))/(x2-x1)+y1
+            elif x2 == x1:
+                y = playerx
+            if my > playery and y > playery:
+                pygame.draw.rect(screen, (0, 0, 0), (x, y, 8, 8)) # Location, location, size, size
+            elif my < playery and y < playery:
+                pygame.draw.rect(screen, (0, 0, 0), (x, y, 8, 8)) # Location, location, size, size
+
+
+        for yfinder in range(7):
+            y = yfinder*120
+            if y2 != y1:
+                x = ((x2-x1)*(y-y1))/(y2-y1)+x1
+            elif y2 == y1:
+                x = playery
+            if my > playery and y > playery:
+                pygame.draw.rect(screen, (0, 0, 0), (x, y, 8, 8)) # Location, location, size, size
+            elif my < playery and y < playery:
+                pygame.draw.rect(screen, (0, 0, 0), (x, y, 8, 8)) # Location, location, size, size
+
+
+        Mobster_x = Mobster_Dict["x"]
+        Mobster_y = Mobster_Dict["y"]
+        if Mobster_y-16 <= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1 and Mobster_y+16 >= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1:
+            Mobster_Dict["health"] -= 50
+
+
+
+
 
 def Mobster():
     global playerx
     global playery
+    global health
+    global Time_Dict
     x = Mobster_Dict["x"]
     y = Mobster_Dict["y"]
 
-    s = pygame.Surface((16,16)) # Size of Shadow
-    s.set_alpha(180) # Alpha of Shadow
-    s.fill((0,0,0)) # Color of Shadow
-    screen.blit(s, ((x+4), (y+4))) # Position of Shadow
-    pygame.draw.rect(screen, (45, 45, 45), (x, y, 16, 16)) # Location, location, size, size
+    if Mobster_Dict["health"] > 0:
 
-    mobster_movement = random.randrange(0, 32)
-    player_distance = math.sqrt((playerx - x)**2 + (playery - y)**2)
-    if player_distance <= 100:
-        if playerx > x:
-            Mobster_Dict["x"] += 4
-        if playery > y:
-            Mobster_Dict["y"] += 4
-        if playerx < x:
-            Mobster_Dict["x"] -= 4
-        if playery < y:
-            Mobster_Dict["y"] -= 4
+        #def Mobsterspawn(x, y)
+        s = pygame.Surface((16,16)) # Size of Shadow
+        s.set_alpha(180) # Alpha of Shadow
+        s.fill((0,0,0)) # Color of Shadow
+        screen.blit(s, ((x-4), (y-4))) # Position of Shadow
+        pygame.draw.rect(screen, (45, 45, 45), (x-8, y-8, 16, 16)) # Location, location, size, size
 
-    Mobster_right = True
-    Mobster_left = True
-    Mobster_down = True
-    Mobster_up = True
+        mobster_movement = random.randrange(0, 8)
 
-    obstacle_finder = [[1,1,1,1]]
-    if scene == "Map_Work_1":
-        obstacle_finder = Map_Work_1_Obstacles
-    if scene == "Map_Park":
-        obstacle_finder = Map_Park_Obstacles
-    if scene == "Map_Work_2":
-        obstacle_finder = Map_Work_2_Obstacles
-    if scene == "Map_Food":
-        obstacle_finder = Map_Food_Obstacles
-    if scene == "Map_Home":
-        obstacle_finder = Map_Home_Obstacles
-    if scene == "Map_Bank":
-        obstacle_finder = Map_Bank_Obstacles
-    if scene == "Map_Uni":
-        obstacle_finder = Map_Uni_Obstacles
-    if scene == "Map_Shop_1":
-        obstacle_finder = Map_Shop_1_Obstacles
-    if scene == "Map_Shop_2":
-        obstacle_finder = Map_Shop_2_Obstacles
+        Mobster_right = True
+        Mobster_left = True
+        Mobster_down = True
+        Mobster_up = True
 
-    for i in obstacle_finder:
-        obstacle_xlow = i[0]
-        obstacle_ylow = i[1]
-        obstacle_xhigh = i[2]
-        obstacle_yhigh = i[3]
-        if (x + 4) == obstacle_xlow and y >= obstacle_ylow and y <= obstacle_yhigh:
-            Mobster_right = False
-        if (x - 4) == obstacle_xhigh and y >= obstacle_ylow and y <= obstacle_yhigh:
-            Mobster_left = False
-        if (y + 4) == obstacle_ylow and x >= obstacle_xlow and x <= obstacle_xhigh:
-            Mobster_down = False
-        if (y - 4) == obstacle_yhigh and x >= obstacle_xlow and x <= obstacle_xhigh:
-            Mobster_up = False
+        obstacle_finder = [[1,1,1,1]]
+        if scene == "Map_Work_1":
+            obstacle_finder = Map_Work_1_Obstacles
+        if scene == "Map_Park":
+            obstacle_finder = Map_Park_Obstacles
+        if scene == "Map_Work_2":
+            obstacle_finder = Map_Work_2_Obstacles
+        if scene == "Map_Food":
+            obstacle_finder = Map_Food_Obstacles
+        if scene == "Map_Home":
+            obstacle_finder = Map_Home_Obstacles
+        if scene == "Map_Bank":
+            obstacle_finder = Map_Bank_Obstacles
+        if scene == "Map_Uni":
+            obstacle_finder = Map_Uni_Obstacles
+        if scene == "Map_Shop_1":
+            obstacle_finder = Map_Shop_1_Obstacles
+        if scene == "Map_Shop_2":
+            obstacle_finder = Map_Shop_2_Obstacles
 
-    if mobster_movement == 2 and Mobster_right == True:
-        Mobster_Dict["x"] += 4
-    if mobster_movement == 4 and Mobster_left == True:
-        Mobster_Dict["x"] -= 4
-    if mobster_movement == 8 and Mobster_down == True:
-        Mobster_Dict["y"] += 4
-    if mobster_movement == 16 and Mobster_up == True:
-        Mobster_Dict["y"] -= 4
+        for i in obstacle_finder:
+            obstacle_xlow = i[0]
+            obstacle_ylow = i[1]
+            obstacle_xhigh = i[2]
+            obstacle_yhigh = i[3]
+            if (x + 4) == obstacle_xlow and y >= obstacle_ylow and y <= obstacle_yhigh:
+                Mobster_right = False
+            if (x - 4) == obstacle_xhigh and y >= obstacle_ylow and y <= obstacle_yhigh:
+                Mobster_left = False
+            if (y + 4) == obstacle_ylow and x >= obstacle_xlow and x <= obstacle_xhigh:
+                Mobster_down = False
+            if (y - 4) == obstacle_yhigh and x >= obstacle_xlow and x <= obstacle_xhigh:
+                Mobster_up = False
+
+        player_distance = math.sqrt((playerx - x)**2 + (playery - y)**2)
+        if player_distance <= (Time_Dict["hour"]*12):
+            if playerx > x and Mobster_right == True:
+                Mobster_Dict["x"] += 4
+            if playerx < x and Mobster_left == True:
+                Mobster_Dict["x"] -= 4
+            if playery > y and Mobster_down == True:
+                Mobster_Dict["y"] += 4
+            if playery < y and Mobster_up == True:
+                Mobster_Dict["y"] -= 4
+        else:
+            if mobster_movement == 1 and Mobster_right == True:
+                Mobster_Dict["x"] += 4
+            if mobster_movement == 2 and Mobster_left == True:
+                Mobster_Dict["x"] -= 4
+            if mobster_movement == 3 and Mobster_down == True:
+                Mobster_Dict["y"] += 4
+            if mobster_movement == 4 and Mobster_up == True:
+                Mobster_Dict["y"] -= 4
+
+        if playerx > x-12 and playerx < x+12 and playery > y-12 and playery < y+12:
+            health -= Mobster_Dict["damage"]
 
 
 
@@ -932,18 +1023,30 @@ while running == True:
         playerx = 0
         if current_map != 9 and current_map != 6 and current_map != 3:
             current_map += 1
+            Mobster_Dict["x"] = random.randrange(45, 135)*4
+            Mobster_Dict["y"] = random.randrange(45, 135)*4
+            Mobster_Dict["health"] = 150
     if playerx <= -4:
         playerx = 712
         if current_map != 1 and current_map != 4 and current_map != 7:
             current_map -= 1
+            Mobster_Dict["x"] = random.randrange(45, 135)*4
+            Mobster_Dict["y"] = random.randrange(45, 135)*4
+            Mobster_Dict["health"] = 150
     if playery >= 716:
         playery = 0
         if current_map != 7 and current_map != 8 and current_map != 9:
             current_map += 3
+            Mobster_Dict["x"] = random.randrange(45, 135)*4
+            Mobster_Dict["y"] = random.randrange(45, 135)*4
+            Mobster_Dict["health"] = 150
     if playery <= -4:
         playery = 712
         if current_map != 1 and current_map != 2 and current_map != 3:
             current_map -= 3
+            Mobster_Dict["x"] = random.randrange(45, 135)*4
+            Mobster_Dict["y"] = random.randrange(45, 135)*4
+            Mobster_Dict["health"] = 150
     if "Map" in scene:
         scene = maps[current_map]
 
@@ -964,20 +1067,38 @@ while running == True:
             ButtonLocationPrintHolder = "holder"
             running = False
 
+    if health <= 0:
+        health = 20
+        #PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
+        #scene == "Map_Home"
+        playerx = 536
+        playery = 460
+        scene = "Map_Home"
+        current_map = 5
+        money = money*random.randrange(0, 10)*0.1 #lose random amount of your money
+
+        Mobster_Dict["x"] = random.randrange(45, 135)*4 #respawn mobster at random location
+        Mobster_Dict["y"] = random.randrange(45, 135)*4 #respawn mobster at random location
+        PrintGeneral("YOU DIED AND LOST HALF YOUR MONEY") #little message
+
     PrintMap()
 
-    if scene == "Small_Apartment":
+
+
+
+    if scene == "Small_Apartment" or scene == "House":
         #if "skateboard" not in inventory:
             #inventory.append("skateboard")
         if ButtonLocationPrintHolder == "button1":
             ButtonLocationPrintHolder = "holder"
             scene = maps[current_map]
-            print("EXIT")
         if ButtonLocationPrintHolder == "button2":
             ButtonLocationPrintHolder = "holder"
             scene = maps[current_map]
             Time_Dict["day"] += 1
             Time_Dict["hour"] = 6
+            if health < 90:
+                health += 10
 
     if scene == "Bank":
         if ButtonLocationPrintHolder == "button1":
@@ -997,7 +1118,7 @@ while running == True:
             ButtonLocationPrintHolder = "holder"
             if money >= 100000:
                 money -= 100000
-                inventory.append("House Keys")
+                inventory["House Keys"] = 1
 
 
     key = pygame.key.get_pressed()
@@ -1010,12 +1131,15 @@ while running == True:
     if "PlayerWork" in scene:
         Work(scene)
 
-
+    if Time_Dict["hour"] > 18 and "Map" in scene:
+        s = pygame.Surface((720,720)) # Size of Shadow
+        s.set_alpha(Time_Dict["hour"]*5) # Alpha of Shadow
+        s.fill((0,0,0)) # Color of Shadow
+        screen.blit(s, (0, 0))
 
     if Time_Dict["hour"] >= 24:
         Time_Dict["day"] += 1
         Time_Dict["hour"] = 0
-
 
 
     if current_stamina < max_stamina:
