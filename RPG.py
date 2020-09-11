@@ -31,7 +31,7 @@ running = True
 # load and set the logo
 logo = pygame.image.load("logo.png")
 pygame.display.set_icon(logo)
-pygame.display.set_caption("RPG - Work in progress")
+pygame.display.set_caption("RPG - Sam McKid")
 
 
 ### SREEN AND CLOCK ###
@@ -546,9 +546,9 @@ def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action
 def BuildlingPrinter():
     global entrance_scene
     if entrance_scene == "Small_Apartment":
-        PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
+        PrintBuilding("EXIT", "SLEEP", "SAVE", "", "", (536, 440), "Small_Apartment")
     if entrance_scene == "House" and "House Keys" in inventory:
-        PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (204, 544), "House")
+        PrintBuilding("EXIT", "SLEEP", "SAVE", "", "", (204, 544), "House")
     if entrance_scene == "Bank":
         PrintBuilding("EXIT", "DEPOSIT", "WITHDRAWL", "BUY HOUSE", "", (460, 248), "Bank")
     if entrance_scene == "Work_1_Sales":
@@ -1122,7 +1122,7 @@ def Mobster():
             health -= Mobster_Dict["damage"]
 
 def Load():
-    print("saving")
+    #print("saving")
     something = "happens"
     global health
     global Time_Dict
@@ -1326,7 +1326,7 @@ while running == True:
 
     if health <= 0:
         health = 20
-        #PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
+        #PrintBuilding("EXIT", "SLEEP", "SAVE", "", "", (536, 440), "Small_Apartment")
         #scene == "Map_Home"
         playerx = 536
         playery = 460
@@ -1358,7 +1358,7 @@ while running == True:
             ButtonLocationPrintHolder = "holder"
             PrintGeneral("Game Saved")
             Save()
-            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (204, 544), "House")
+            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "", (204, 544), "House")
 
     if scene == "Small_Apartment":
         #if "skateboard" not in inventory:
@@ -1377,7 +1377,7 @@ while running == True:
             ButtonLocationPrintHolder = "holder"
             Save()
             PrintGeneral("Game Saved")
-            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
+            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "", (536, 440), "Small_Apartment")
 
     if scene == "Bank":
         if ButtonLocationPrintHolder == "button1":
