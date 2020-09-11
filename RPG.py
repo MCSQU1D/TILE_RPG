@@ -53,27 +53,12 @@ pygame.mixer.music.load("Music.mp3")
 
 
 
-#Start
-#Opening
-#Map1
-#Map2
-#Map3
-#Map4
-#Map5
-#Map6
-#Map7
-#Map8
-#map9
-#End
-
-
-
-
 
 
 
 
 ###   VARIABLES   START  ###
+
 
 
 ButtonLocationPrintHolder = "placeholder"
@@ -101,7 +86,6 @@ can_right = True
 
 
 global health
-global Time_Taken
 global Time_Dict
 global current_stamina
 global max_stamina
@@ -111,22 +95,27 @@ global money
 global Bank_account
 global Mobster_Dict
 global inventory
+global player_colour
+player_colour = {
+    "R" : 0,
+    "G" : 0,
+    "B" : 0
+}
 
-Bank_account = 100
+Bank_account = 0
 health = 100
-money = 1000000
-Time_Taken = 0
+money = 100
 Time_Dict = {
     "day" : 0,
     "hour" : 20,
 }
 Stats_Dict = {
-    "intelligence" : 1000,
-    "strength" : 1000,
-    "charm" : 1000,
+    "intelligence" : 10,
+    "strength" : 10,
+    "charm" : 10,
     "karma" : 0
 }
-current_stamina = 50000
+current_stamina = 50
 max_stamina = 100
 Mobster_Dict = {
     "x" : 24,
@@ -136,11 +125,18 @@ Mobster_Dict = {
 }
 inventory = {}
 
+global Sales_Job
+global Accounting_Job
+global Shipping_Job
+global Banking_Job
+global Executive_Job
+
 Sales_Job = "None"
 Shipping_Job = "None"
 Accounting_Job = "None"
 Banking_Job = "None"
 Executive_Job = "None"
+
 
 
 
@@ -246,6 +242,7 @@ Map_Uni_Obstacles = [
 [-4, 472, 724, 724]
 ]
 Map_Shop_1_Obstacles = [
+[-4, -4, 724, 4], # Top boarder
 [-4, 716, 724, 724], # Bottom boarder
 [-4, 472, 724, 724]
 ]
@@ -272,7 +269,10 @@ Map_Work_2_Entrances = [
 [440, 472, 488, 560, "Work_2_Executive"]
 ]
 Map_Food_Entrances = [
-[208, 132, 244, 232, "Big_Red"]
+[208, 132, 244, 232, "Shopping"],
+[208, 296, 244, 480, "Shopping"],
+[208, 532, 244, 592, "Shopping"],
+[208, 648, 244, 700, "Shopping"]
 ]
 Map_Home_Entrances = [
 [512, 456, 568, 468, "Small_Apartment"],
@@ -282,20 +282,21 @@ Map_Bank_Entrances = [
 [480, 216, 496, 280, "Bank"]
 ]
 Map_Uni_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[28, 236, 116, 284, "Gym"],
+[160, 428, 296, 484, "School"]
 ]
 Map_Shop_1_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[148, 440, 356, 484, "Hunting"]
 ]
 Map_Shop_2_Entrances = [
-[-1, -1, -1, -1, "nothing"]
+[244, 428, 356, 484, "Skate"]
 ]
 
 ###   VARIABLES   END   ###
 
 
 
-###   PRINTING   START   ###
+###   FUNCTIONS   START   ###
 def PrintStartButtons(buttontext1, buttontext2, buttontext3):
     screen.fill((205,0,0))  # (R, G, B)
     text = "RPG"
@@ -392,6 +393,102 @@ def PrintMap():
         PrintStats(health, Time_Dict, current_stamina)
         CheckEntrances(playerx, playery)
 
+
+# mx, my = pygame.mouse.get_pos()
+
+def Introduction():
+    global running
+    global player_colour
+    part1 = False
+    while part1 == False:
+        screen.fill((205,0,0))  # (R, G, B)
+        Story = ["Comrade:", "You have been choosen", "to fight the americans.", "you will be deployed in", "capitalist america.", "good luck comrade.", "", "click to continue"]
+        font = pygame.font.Font('RUSKOF.ttf', 60) #Font size
+        text_height = 0
+        for i in Story:
+            text_height += 80
+            text = i
+            text = font.render(text, True, (255, 217, 0)) #Font colour
+            linewidth = text.get_width()
+            textRect = text.get_rect()
+            textRect.center = ((display_width/2), text_height)
+            screen.blit(text, textRect)
+        key = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                part1 = True
+            if event.type == pygame.QUIT:
+                part1 = True
+                running = False
+        pygame.display.update()
+    part2 = False
+    screen.fill((0,0,0))  # (R, G, B)
+    pygame.display.update()
+    font = pygame.font.Font('American_Captain.ttf', 60) #Font size
+    selected = "R"
+    while part2 == False:
+        screen.fill((player_colour["R"],player_colour["G"],player_colour["B"]))  # (R, G, B)
+        text = "YOUR COLOUR:"
+        text = font.render(text, True, ((255-player_colour["R"],255-player_colour["G"],255-player_colour["B"]))) #Font colour
+        linewidth = text.get_width()
+        textRect = text.get_rect()
+        textRect.center = ((display_width/2), 80)
+        screen.blit(text, textRect)
+        text = str(player_colour["R"]) + "_" + str(player_colour["G"]) + "_" +str(player_colour["B"])
+        text = font.render(text, True, ((255-player_colour["R"],255-player_colour["G"],255-player_colour["B"]))) #Font colour
+        linewidth = text.get_width()
+        textRect = text.get_rect()
+        textRect.center = ((display_width/2), 160)
+        screen.blit(text, textRect)
+        text = "click to continue"
+        text = font.render(text, True, ((255-player_colour["R"],255-player_colour["G"],255-player_colour["B"]))) #Font colour
+        linewidth = text.get_width()
+        textRect = text.get_rect()
+        textRect.center = ((display_width/2), 640)
+        screen.blit(text, textRect)
+        key = pygame.key.get_pressed()
+        if key[pygame.K_UP]:
+            if player_colour[selected] < 255:
+                player_colour[selected] += 1
+            if player_colour[selected] >= 255:
+                player_colour[selected] = 0
+        elif key[pygame.K_DOWN]:
+            if player_colour[selected] > 0:
+                player_colour[selected] -= 1
+            if player_colour[selected] <= 0:
+                player_colour[selected] = 255
+        elif key[pygame.K_RIGHT]:
+            if selected == "R":
+                selected = "G"
+            if selected == "G":
+                selected = "B"
+            if selected == "B":
+                elected = "R"
+        elif key[pygame.K_LEFT]:
+            if selected == "R":
+                selected = "B"
+            if selected == "G":
+                selected = "R"
+            if selected == "B":
+                selected = "G"
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                part2 = True
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                part2 = True
+        pygame.display.update()
+        #print(player_colour)
+
+    #print("end")
+
+
+
+
+
+
+
+
 def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action_4_text, exit_coords, building):
     global Mobster_Dict
     Mobster_Dict["x"] = random.randrange(45, 135)*4 #respawn mobster at random location everytime you enter a building
@@ -447,6 +544,7 @@ def PrintBuilding(exit_text, action_1_text, action_2_text, action_3_text, action
 
 
 def BuildlingPrinter():
+    global entrance_scene
     if entrance_scene == "Small_Apartment":
         PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
     if entrance_scene == "House" and "House Keys" in inventory:
@@ -463,6 +561,16 @@ def BuildlingPrinter():
         PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (268, 288), "PlayerWork_Banking")
     if entrance_scene == "Work_2_Executive":
         PrintBuilding("EXIT", "WORK", "PROMOTION", "", "APPLY", (432, 516), "PlayerWork_Executive")
+    if entrance_scene == "Shopping":
+        PrintBuilding("EXIT", "BUY DRINK", "BUY FOOD", "", "", (272, 360), "Shopping")
+    if entrance_scene == "Gym":
+        PrintBuilding("EXIT", "WORKOUT", "EXTREME WORKOUT", "FITNESS", "", (72, 300), "Gym")
+    if entrance_scene == "School":
+        PrintBuilding("EXIT", "STUDY", "CLASS", "", "", (228, 412), "School")
+    if entrance_scene == "Skate":
+        PrintBuilding("EXIT", "BUY SKATEBOARD", "", "", "", (300, 416), "Skate")
+    if entrance_scene == "Hunting":
+        PrintBuilding("EXIT", "BUY GUN", "BULLETS", "", "", (256, 420), "Hunting")
 
 def Work(Work_Location):
     global Workplace_List
@@ -527,7 +635,7 @@ def Work(Work_Location):
                 for i in Work_Dict:
                     if Job == i[0]:
                         PrintGeneral("Earnt: " + str(i[4]))
-                        print("Earnt: " + str(i[4]))
+                        #print("Earnt: " + str(i[4]))
                         money += i[4]
                         Time_Dict["hour"] += 6
                         scene = maps[current_map]
@@ -544,9 +652,24 @@ def Work(Work_Location):
             #print(i)
             if i[0] == Job:
                 holda = Work_Dict[(a-1)]
-                if Stats_Dict["intelligence"] >= holda[1]:
+                extraholda = Work_Dict[-1]
+                if Stats_Dict["intelligence"] >= i[1] and Stats_Dict["strength"] >= i[2] and Stats_Dict["charm"] >= i[3] and Job != extraholda[0]:
+                    Job = i[0]
+                    if "Sales" in Work_Location:
+                        Sales_Job = Job
+                    if "Accounting" in Work_Location:
+                        Accounting_Job = Job
+                    if "Shipping" in Work_Location:
+                        Shipping_Job = Job
+                    if "Banking" in Work_Location:
+                        Banking_Job = Job
+                    if "Executive" in Work_Location:
+                        Executive_Job = Job
                     PrintGeneral("Promoted")
                     #print("Promoted")
+                elif Job == extraholda[0]:
+                    PrintGeneral("No positions higher")
+                    #print("Rejected")
                 else:
                     PrintGeneral("Rejected")
                     #print("Rejected")
@@ -617,12 +740,14 @@ def PrintStats(health, time, current_stamina):
 
 
 def PrintPlayer(x, y):
+    global player_colour
+    #print(player_colour)
     s = pygame.Surface((16,16)) # Size of Shadow
-    s.set_alpha(180) # Alpha of Shadow
-    s.fill((115,55,0)) # Color of Shadow
+    s.set_alpha(100) # Alpha of Shadow
+    s.fill((0,0,0)) # Color of Shadow
     screen.blit(s, ((x-4), (y-4))) # Position of Shadow
     SkateBoard(x, y)
-    pygame.draw.rect(screen, (230, 110, 1), (x-8, y-8, 16, 16)) # Location, location, size, size
+    pygame.draw.rect(screen, (player_colour["R"], player_colour["G"], player_colour["B"]), (x-8, y-8, 16, 16)) # Location, location, size, size
 
 
 
@@ -703,12 +828,31 @@ def CheckEntrances(playerx, playery):
             #print(scene)
 
 def PrintGeneral(text):
-    font = pygame.font.Font('American_Captain.ttf', 50) #Font size
-    text = font.render(text, True, (0, 0, 0)) #Font colour
-    linewidth = text.get_width()
-    textRect = text.get_rect()
-    textRect.center = ((display_width/2), (display_height/2))
-    screen.blit(text, textRect)
+    printer = str(text)
+    print_waiter = False
+    screen.fill((0,0,0))  # (R, G, B)
+    font = pygame.font.Font('American_Captain.ttf', 60) #Font size
+    printer = font.render(printer, True, (255, 255, 255)) #Font colour
+    linewidth = printer.get_width()
+    textRect = printer.get_rect()
+    textRect.center = ((display_width/2), 80)
+    screen.blit(printer, textRect)
+
+    printer = "click to continue"
+    printer = font.render(printer, True, (255, 255, 255)) #Font colour
+    linewidth = printer.get_width()
+    textRect = printer.get_rect()
+    textRect.center = ((display_width/2), 640)
+    screen.blit(printer, textRect)
+    pygame.display.update()
+    while print_waiter == False:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print_waiter = True
+            if event.type == pygame.QUIT:
+                print_waiter = True
+                running = False
+
 
 
 def CheckObstactles():
@@ -820,6 +964,9 @@ def PrintInventory():
     b = 0
     for i in inventory:
         a += 1
+        if i == "Bullet":
+            c = i
+            i = c + "s x " + str(inventory["Bullet"])
         i = font.render(i, True, (0, 0, 0)) #Font colour
         linewidth = i.get_width()
         textRect = i.get_rect()
@@ -845,11 +992,13 @@ def PrintInventory():
 
 
 def GunFired(mx, my, playerx, playery):
-    if "Gun" in inventory:
+    if "Gun" in inventory and inventory["Bullet"] > 0:
         y1 = my
         x1 = mx
         y2 = playery
         x2 = playerx
+
+        inventory["Bullet"] -= 1
 
 
         for xfinder in range(7):
@@ -878,7 +1027,13 @@ def GunFired(mx, my, playerx, playery):
 
         Mobster_x = Mobster_Dict["x"]
         Mobster_y = Mobster_Dict["y"]
-        if Mobster_y-16 <= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1 and Mobster_y+16 >= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1:
+        if (x2-x1) == 0:
+            print("vertical")
+            if y1 < playery and Mobster_y < playery:  #both above
+                Mobster_Dict["health"] -= 50
+            if y1 > playery and Mobster_y > playery: #both below
+                Mobster_Dict["health"] -= 50
+        elif Mobster_y-16 <= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1 and Mobster_y+16 >= ((y2-y1)*((Mobster_x)-x1))/(x2-x1)+y1:
             Mobster_Dict["health"] -= 50
 
 
@@ -966,9 +1121,109 @@ def Mobster():
         if playerx > x-12 and playerx < x+12 and playery > y-12 and playery < y+12:
             health -= Mobster_Dict["damage"]
 
+def Load():
+    print("saving")
+    something = "happens"
+    global health
+    global Time_Dict
+    global current_stamina
+    global max_stamina
+    global Stats_Dict
+    global money
+    global Bank_account
+    global inventory
+    global Sales_Job
+    global Accounting_Job
+    global Shipping_Job
+    global Banking_Job
+    global Executive_Job
+    global player_colour
+    #[health, Time_Dict, current_stamina, max_stamina, Stats_Dict, money, Bank_account, inventory, Sales_Job, Accounting_Job, Shipping_Job, Banking_Job, Executive_Job, player_colour]
+    #save_writer = [health, Time_Dict, current_stamina, max_stamina, Stats_Dict, money, Bank_account, inventory, Sales_Job, Accounting_Job, Shipping_Job, Banking_Job, Executive_Job, player_colour]
+    #print(save_writer)
+
+    path = os.path.join("saves")
+    FileList = []
+    SavesList = []
+    save = ""
+
+    for r, d, f in os.walk(path):
+        for file in f:
+            if '.txt' in file:
+                FileList.append(file)
+    #print(FileList)
+    for i in FileList:
+        if i == "gamesave.txt":
+            save = i
+    if save == "gamesave.txt":
+        file_name = os.getcwd()+"/saves/gamesave.txt"  #finds the save game folder
+        GameSave = open(file_name,"r")
+        save_reader = GameSave.read()
+        #save_writer = [health, Time_Dict, current_stamina, max_stamina, Stats_Dict, money, Bank_account, inventory, Sales_Job, Accounting_Job, Shipping_Job, Banking_Job, Executive_Job, player_colour]
+        save_reader_list = save_reader.split("\n")
+        GameSave.close()
+        #print(save_reader_list)
+        #print(save_writer)
+        health = int(save_reader_list[0])     #convert back to original form
+        Time_Dict = eval(save_reader_list[1])
+        current_stamina = float(save_reader_list[2])
+        max_stamina = int(save_reader_list[3])
+        Stats_Dict = save_reader_list[4]
+        money = float(save_reader_list[5])
+        Bank_account = float(save_reader_list[6])
+        inventory = eval(save_reader_list[7])    #converts compatable strings to dictionaries
+        Sales_Job = save_reader_list[8]
+        Accounting_Job = save_reader_list[9]
+        Shipping_Job = save_reader_list[10]
+        Banking_Job = save_reader_list[11]
+        Executive_Job = save_reader_list[12]
+        player_colour = eval(save_reader_list[13])
+
+def Save():
+    #print("saving")
+    something = "happens"
+    global health
+    global Time_Dict
+    global current_stamina
+    global max_stamina
+    global Stats_Dict
+    global money
+    global Bank_account
+    global inventory
+    global Sales_Job
+    global Accounting_Job
+    global Shipping_Job
+    global Banking_Job
+    global Executive_Job
+    global player_colour
+    #[health, Time_Dict, current_stamina, max_stamina, Stats_Dict, money, Bank_account, inventory, Sales_Job, Accounting_Job, Shipping_Job, Banking_Job, Executive_Job, player_colour]
+    save_writer = [health, Time_Dict, current_stamina, max_stamina, Stats_Dict, money, Bank_account, inventory, Sales_Job, Accounting_Job, Shipping_Job, Banking_Job, Executive_Job, player_colour]
+    #print(save_writer)
+    path = os.path.join("saves")
+    FileList = []
+    SavesList = []
+    save = ""
 
 
-###   PRINTING   END   ###
+    for r, d, f in os.walk(path):
+        for file in f:
+            if '.txt' in file:
+                FileList.append(file)
+    #print(FileList)
+    for i in FileList:
+        if i == "gamesave.txt":
+            save = i
+    if save == "gamesave.txt":
+        file_name = os.getcwd()+"/saves/gamesave.txt"  #finds the save game folder
+        GameSave = open(file_name,"w")
+        for i in save_writer:
+            GameSave.write(str(i) + "\n")
+        GameSave = open(file_name,"r")
+        #print(GameSave.read())
+        GameSave.close()
+
+
+###   FUNCTIONS   END   ###
 
 
 
@@ -1055,13 +1310,15 @@ while running == True:
         PrintStartButtons("PLAY", "LOAD", "QUIT")
         if ButtonLocationPrintHolder == "button1":
             ButtonLocationPrintHolder = "holder"
-            something = "happens"
+            Introduction()
             scene = "Map_Home"
             current_map = 5
             #pygame.mixer.music.play(0)
         if ButtonLocationPrintHolder == "button2":
             ButtonLocationPrintHolder = "holder"
-            something = "happens"
+            Load()
+            scene = "Map_Home"
+            current_map = 5
             #scene = "Load_Screen"
         if ButtonLocationPrintHolder == "button3":
             ButtonLocationPrintHolder = "holder"
@@ -1079,14 +1336,12 @@ while running == True:
 
         Mobster_Dict["x"] = random.randrange(45, 135)*4 #respawn mobster at random location
         Mobster_Dict["y"] = random.randrange(45, 135)*4 #respawn mobster at random location
-        PrintGeneral("YOU DIED AND LOST HALF YOUR MONEY") #little message
+        PrintGeneral("you died and lost some money") #little message
 
     PrintMap()
 
 
-
-
-    if scene == "Small_Apartment" or scene == "House":
+    if scene == "House":
         #if "skateboard" not in inventory:
             #inventory.append("skateboard")
         if ButtonLocationPrintHolder == "button1":
@@ -1099,6 +1354,30 @@ while running == True:
             Time_Dict["hour"] = 6
             if health < 90:
                 health += 10
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            PrintGeneral("Game Saved")
+            Save()
+            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (204, 544), "House")
+
+    if scene == "Small_Apartment":
+        #if "skateboard" not in inventory:
+            #inventory.append("skateboard")
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+            Time_Dict["day"] += 1
+            Time_Dict["hour"] = 6
+            if health < 90:
+                health += 10
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            Save()
+            PrintGeneral("Game Saved")
+            PrintBuilding("EXIT", "SLEEP", "SAVE", "", "SETTINGS", (536, 440), "Small_Apartment")
 
     if scene == "Bank":
         if ButtonLocationPrintHolder == "button1":
@@ -1127,6 +1406,126 @@ while running == True:
     if key[pygame.K_ESCAPE]:
         scene = maps[current_map]
 
+    if scene == "Shopping":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            if money >= 5:
+                max_stamina += 5
+                stamina = max_stamina
+                PrintGeneral("STAMINA INCREASED")
+                PrintBuilding("EXIT", "BUY DRINK", "BUY FOOD", "", "", (272, 360), "Shopping")
+            #BUY DRINKS
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            if money >= 10:
+                money -= 10
+                health += 5
+                PrintGeneral("HEALTH INCREASED")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "BUY DRINK", "BUY FOOD", "", "", (272, 360), "Shopping")
+            #BUY FOOD
+    if scene == "Gym":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            Stats_Dict["strength"] += 10
+            health += 10
+            PrintGeneral("HEALTH and STRENGTH INCREASED")
+            PrintBuilding("EXIT", "WORKOUT", "EXTREME WORKOUT", "FITNESS", "", (72, 300), "Gym")
+            #FREE WORKOUT
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            #PAID WORKOUT
+            if money >= 200:
+                money -= 200
+                Stats_Dict["strength"] += 50
+                Stats_Dict["charm"] += 25
+                health += 50
+                PrintGeneral("HEALTH, CHARM, STRENGTH INCREASED")
+            else:
+                PrintGeneral("NO ENOUGH MONEY")
+            PrintBuilding("EXIT", "WORKOUT", "EXTREME WORKOUT", "FITNESS", "", (72, 300), "Gym")
+        if ButtonLocationPrintHolder == "button4":
+            ButtonLocationPrintHolder = "holder"
+            #FITNESS
+            if money >= 200:
+                money -= 200
+                health += 150
+                PrintGeneral("HEALTH INCREASED")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "WORKOUT", "EXTREME WORKOUT", "FITNESS", "", (72, 300), "Gym")
+    if scene == "School":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            Stats_Dict["intelligence"] += 10
+            Stats_Dict["charm"] += 5
+            PrintGeneral("intelligence and CHARM INCREASED")
+            PrintBuilding("EXIT", "STUDY", "CLASS", "", "", (228, 412), "School")
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            #PAID SCHOOL
+            if money >= 200:
+                money -= 200
+                Stats_Dict["intelligence"] += 50
+                Stats_Dict["charm"] += 25
+                PrintGeneral("intelligence and CHARM INCREASED")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "STUDY", "CLASS", "", "", (228, 412), "School")
+    if scene == "Skate":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            if money >= 100 and "skateboard" not in inventory:
+                money -= 100
+                inventory["skateboard"] = 1
+                PrintGeneral("Skateboard bought")
+            elif "skateboard" in inventory:
+                PrintGeneral("already own Skateboard")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "BUY SKATEBOARD", "", "", "", (300, 416), "Skate")
+    if scene == "Hunting":
+        if ButtonLocationPrintHolder == "button1":
+            ButtonLocationPrintHolder = "holder"
+            scene = maps[current_map]
+        if ButtonLocationPrintHolder == "button2":
+            ButtonLocationPrintHolder = "holder"
+            if money >= 10000 and "Gun" not in inventory:
+                money -= 10000
+                inventory["Gun"] = 1
+                PrintGeneral("Gun bought")
+            elif "Gun" in inventory:
+                PrintGeneral("already own Gun")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "BUY GUN", "BULLETS", "", "", (256, 420), "Hunting")
+        if ButtonLocationPrintHolder == "button3":
+            ButtonLocationPrintHolder = "holder"
+            #BUY BULLETS
+            ButtonLocationPrintHolder = "holder"
+            if money >= 100:
+                money -= 100
+                if "Bullet" in inventory:
+                    inventory["Bullet"] += 10
+                else:
+                    inventory["Bullet"] = 10
+                PrintGeneral("10 Bullets bought")
+            else:
+                PrintGeneral("NOT ENOUGH MONEY")
+            PrintBuilding("EXIT", "BUY GUN", "BULLETS", "", "", (256, 420), "Hunting")
 
     if "PlayerWork" in scene:
         Work(scene)
@@ -1154,7 +1553,6 @@ while running == True:
     ButtonLocationPrintHolder = "holder"
     Bank_account += Bank_account*(0.0001388888889) #Equals 5% per 0.6 seconds or something like that
     Bank_account = round(Bank_account, 2)  #round it so it looks nice
-
     #print(pygame.mixer.music.get_pos())
     if pygame.mixer.music.get_pos() >= 6000:
         pygame.mixer.music.play()

@@ -1,0 +1,14 @@
+100
+{'day': 0, 'hour': 20}
+91.4
+100
+{'intelligence': 10, 'strength': 10, 'charm': 10, 'karma': 0}
+100
+0.0
+{}
+None
+None
+None
+None
+None
+{'R': 0, 'G': 0, 'B': 0}
